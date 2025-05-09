@@ -1,0 +1,33 @@
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { VoteService } from './vote.service';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/common/get-user.decorotator';
+import { User } from 'src/user/user.entity';
+import { CreateVoteDto } from './dto/create-vote.dto';
+
+@Controller('vote')
+export class VoteController {
+  constructor(private readonly voteService: VoteService) {}
+
+  @Post('/:memeId')
+  @UseGuards(AuthGuard('jwt'))
+  createOrUpdateVote(
+    @Param('memeId') memeId: string,
+    @Body() dto: CreateVoteDto, 
+    @GetUser() user: User) {
+    return this.voteService.createOrUpdateVote(memeId, user.id, dto.type);
+  }
+
+  @Delete('/:memeId')
+  @UseGuards(AuthGuard('jwt'))
+  delete(@Param('memeId') memeId: string, @GetUser() user: User) {
+    return this.voteService.delete(memeId, user.id);
+  }
+
+
+  @Get('/:memeId/user')
+  @UseGuards(AuthGuard('jwt'))
+  getUserVote(@Param('memeId') memeId: string, @GetUser() user: User) {
+    return this.voteService.getUserVote(memeId, user.id);
+  }
+}
