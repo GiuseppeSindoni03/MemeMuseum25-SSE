@@ -28,36 +28,83 @@ export class MemeService {
     @InjectRepository(Comment)
     private commentRepository: Repository<Comment>,
 
-    @InjectRepository(Tag)
     private tagService: TagService,
   ) {}
 
   async createMeme(
-    userId: string,
+    user: User,
     dto: CreateMemeDto,
     filename: string,
-  ): Promise<Meme> {
+  ): Promise<any> {
     const tags = await this.tagService.findOrCreateTags(dto.tags);
 
     const meme = this.memeRepository.create({
       title: dto.title,
       imageUrl: `/uploads/${filename}`,
       tags: tags,
-      author: { id: userId },
+      author: { id: user.id },
     });
 
-    return this.memeRepository.save(meme);
+    const newMeme = await this.memeRepository.save(meme);
+
+    return {
+      id: newMeme.id,
+      title: newMeme.title,
+      imageUrl: newMeme.imageUrl,
+      createdAt: newMeme.createdAt,
+      author: user.username,
+      upvote: 0,
+      downvote: 0,
+      userVote: null,
+      tags: newMeme.tags.map((tag) => tag.name),
+      commentsCount: 0,
+    };
   }
 
-  async getAll(): Promise<Meme[]> {
-    return this.memeRepository.find({
+  async getAll(userId?: string): Promise<any[]> {
+    const memes = await this.memeRepository.find({
       relations: ['author', 'tags', 'comments', 'votes'],
       order: { createdAt: 'DESC' },
     });
+
+    const formattedMemes = await Promise.all(
+      memes.map(async (meme) => {
+        const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
+        const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
+        let userVoteType: 'UP' | 'DOWN' | null = null;
+
+        if (userId) {
+          const userVote = await this.voteRepository.findOne({
+            where: {
+              meme: { id: meme.id },
+              user: { id: userId },
+            },
+            select: ['id', 'type'],
+          });
+
+          userVoteType = userVote?.type ?? null;
+        }
+
+        return {
+          id: meme.id,
+          title: meme.title,
+          imageUrl: meme.imageUrl,
+          createdAt: meme.createdAt,
+          author: meme.author.username,
+          upvote: upvotes,
+          downvote: downvotes,
+          userVote: userVoteType,
+          tags: meme.tags.map((tag) => tag.name),
+          commentsCount: meme.comments.length,
+        };
+      }),
+    );
+
+    return formattedMemes;
   }
 
-  async getById(memeId: string): Promise<Meme> {
-    const found = await this.memeRepository.findOne({
+  async getById(memeId: string, userId?: string): Promise<any> {
+    const meme = await this.memeRepository.findOne({
       where: { id: memeId },
       relations: [
         'author',
@@ -69,9 +116,36 @@ export class MemeService {
       ],
     });
 
-    if (!found) throw new NotFoundException(`Meme id  "${memeId}" not found`);
+    if (!meme) throw new NotFoundException(`Meme id  "${memeId}" not found`);
 
-    return found;
+    const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
+    const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
+    let userVoteType: 'UP' | 'DOWN' | null = null;
+
+    if (userId) {
+      const userVote = await this.voteRepository.findOne({
+        where: {
+          meme: { id: meme.id },
+          user: { id: userId },
+        },
+        select: ['id', 'type'],
+      });
+
+      userVoteType = userVote?.type ?? null;
+    }
+
+    return {
+      id: meme.id,
+      title: meme.title,
+      imageUrl: meme.imageUrl,
+      createdAt: meme.createdAt,
+      author: meme.author.username,
+      upvote: upvotes,
+      downvote: downvotes,
+      userVote: userVoteType,
+      tags: meme.tags.map((tag) => tag.name),
+      commentsCount: meme.comments.length,
+    };
   }
 
   async countVotes(memeId: string): Promise<{ up: number; down: number }> {

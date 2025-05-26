@@ -20,8 +20,13 @@ export class VoteService {
     let vote = await this.getUserVote(memeId, userId);
 
     if (vote) {
-      // Se esiste, aggiorna il tipo
-      vote.type = type;
+      // Se esiste e il voto è lo stesso lo elimino
+      if (vote.type == type) {
+        this.delete(vote.id,userId);
+      } else {
+        // Se esiste e il voto è diverso lo aggiorno
+        vote.type = type;
+      }
     } else {
       // Altrimenti, crea un nuovo voto
       vote = this.voteRepository.create({
@@ -43,18 +48,9 @@ export class VoteService {
     });
   }
 
-
   async delete(voteId: string, userId: string): Promise<void> {
-    const vote = await this.voteRepository.findOne({
-      where: { id: voteId },
-    });
-
-    if (!vote) {
+    if (!voteId) {
       throw new NotFoundException('Meme not found');
-    }
-
-    if (vote.user.id !== userId) {
-      throw new ForbiddenException('You are not allowed to delete this meme');
     }
 
     await this.voteRepository.delete({

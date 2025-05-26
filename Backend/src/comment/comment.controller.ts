@@ -12,7 +12,7 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from 'src/comment/comment.entity';
-import { GetUser } from 'src/common/get-user.decorotator';
+import { GetUser } from 'src/common/get-user.decorator';
 import { User } from 'src/user/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -36,8 +36,9 @@ export class CommentController {
     return this.commentService.delete(commentId, user.id);
   }
 
-  @Get('/:id')
-  getById(@Param('id') id: string): Promise<Comment> {
-    return this.commentService.getById(id);
+  @Get('/meme/:id')
+  getByMemeId(@Param('id') id: string): Promise<any[]> {
+    return this.commentService.getByMemeId(id);
   }
+  
 }

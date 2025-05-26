@@ -13,6 +13,9 @@ export class MemePreviewDto {
   title: string;
 
   @Expose()
+  createdAt: Date;
+
+  @Expose()
   imageUrl: string;
 
   @Expose()

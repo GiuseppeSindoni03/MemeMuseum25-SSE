@@ -16,13 +16,14 @@ import { MemeService } from './meme.service';
 import { CreateMemeDto } from './dto/create-meme.dto';
 import { UpdateMemeDto } from './dto/update-meme.dto';
 import { FileUploadInterceptor } from 'src/common/file-upload.interceptor';
-import { GetUser } from 'src/common/get-user.decorotator';
+import { GetUser } from 'src/common/get-user.decorator';
 import { User } from 'src/user/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Meme } from './meme.entity';
 import { Comment } from 'src/comment/comment.entity';
 import { MemePreviewDto } from './dto/meme-preview.dto';
 import { plainToInstance } from 'class-transformer';
+import { JwtOptionalAuthGuard } from 'src/common/jwt-optional-auth.guard';
 
 @Controller('meme')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -36,22 +37,29 @@ export class MemeController {
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: CreateMemeDto,
     @GetUser() user: User,
-  ):Promise<Meme> {
-    return this.memeService.createMeme(user.id, dto, file.filename);
+  ):Promise<any> {
+    return this.memeService.createMeme(user, dto, file.filename);
   }
-
+  
+  @UseGuards(JwtOptionalAuthGuard)
   @Get()
-  async getAllMemes():Promise<MemePreviewDto[]> {
-    const memes = await this.memeService.getAll();
+  getAllMemes(@GetUser() user: User):Promise<MemePreviewDto[]> {
+    if(user)
+      return this.memeService.getAll(user.id);
 
-    return plainToInstance(MemePreviewDto, memes, { excludeExtraneousValues: true });
-
+    return this.memeService.getAll();
   }
 
+  @UseGuards(JwtOptionalAuthGuard)
   @Get('/:id')
-  async getById(@Param('id') id: string): Promise<MemePreviewDto> {
-    const meme = await this.memeService.getById(id);
-    return plainToInstance(MemePreviewDto, meme, { excludeExtraneousValues: true });
+  async getById(
+    @Param('id') memeId: string,
+    @GetUser() user: User
+  ): Promise<MemePreviewDto> {
+    if(user)
+      return this.memeService.getById(memeId,user.id);
+
+    return this.memeService.getById(memeId);
   }
  
   @Get('/vote/:memeId')

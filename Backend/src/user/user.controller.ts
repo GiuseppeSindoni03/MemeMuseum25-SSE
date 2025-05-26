@@ -1,15 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { GetUser } from 'src/common/get-user.decorator';
+import { User } from './user.entity';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-
-  @Get('/:id')
-  getById(@Param('id') id: string) {
-    console.log("TEST");
-    return this.userService.getById(id);
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/me')
+  getMe(@GetUser() user: User) {
+    return this.userService.getMe(user.id);
   }
-
 }

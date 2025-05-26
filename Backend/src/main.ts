@@ -8,12 +8,16 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger();
-  
+
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads',
   });
-
-    app.useGlobalPipes(
+  app.enableCors({
+    origin: 'http://localhost:5173', // <-- React dev server (vite)
+    credentials: true, // se usi cookie o auth
+  });
+  
+  app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // Trasforma i payload in DTO automaticamente
       whitelist: true, // Rimuove proprietà non dichiarate nei DTO
@@ -23,6 +27,5 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   await app.listen(process.env.PORT ?? 3000);
   logger.log(`Application listening on port ${process.env.PORT ?? 3000}`);
-
 }
 bootstrap();

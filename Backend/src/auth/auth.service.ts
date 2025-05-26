@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signUp.dto';
-import { Provider } from 'src/common/provider.enum';
 import { JwtPayload } from './dto/jwtPayload.dto';
 import { JwtService } from '@nestjs/jwt';
 import { AuthResponse } from './auth-response';
@@ -29,8 +28,9 @@ export class AuthService {
 
     const found = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.email = :email ', {
+      .where('user.email = :email OR user.username = :username', {
         email,
+        username,
       })
       .getOne();
 
@@ -43,7 +43,6 @@ export class AuthService {
       email,
       password: hashedPassword,
       birthDate,
-      provider: Provider.LOCAL,
     });
 
     await this.userRepository.save(user);
@@ -65,20 +64,12 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Email o password non validi');
     }
 
-    if (user.provider && user.provider !== Provider.LOCAL) {
-      throw new BadRequestException(
-        `This account is linked with ${user.provider}. Please use ${user.provider} login.`,
-      );
-    }
-
-    const payload: JwtPayload = { userId: user.id};
+    const payload: JwtPayload = { userId: user.id };
 
     const accessToken = await this.createToken(payload, '45m');
-
-    console.log(user);
 
     return { accessToken: accessToken };
   }

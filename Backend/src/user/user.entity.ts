@@ -1,5 +1,4 @@
 import { Exclude } from "class-transformer";
-import { Provider } from "src/common/provider.enum";
 import { Meme } from "src/meme/meme.entity";
 import { Vote } from "src/vote/vote.entity";
 import { Comment } from "src/comment/comment.entity";
@@ -23,9 +22,6 @@ export class User {
   @Column({ type: 'date', nullable: true })
   birthDate: Date;
 
-
-  @Column({ type: 'enum', enum: Provider, nullable: true })
-  provider: Provider;
 
   @OneToMany(() => Meme, (meme) => meme.author)
   memes: Meme[];

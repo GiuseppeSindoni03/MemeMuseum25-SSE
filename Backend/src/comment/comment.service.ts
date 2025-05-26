@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -16,7 +20,11 @@ export class CommentService {
     private readonly memeRepository: Repository<Meme>,
   ) {}
 
-  async create(user: User, memeId:string, dto: CreateCommentDto): Promise<Comment> {
+  async create(
+    user: User,
+    memeId: string,
+    dto: CreateCommentDto,
+  ): Promise<Comment> {
     const meme = await this.memeRepository.findOne({
       where: { id: memeId },
     });
@@ -35,9 +43,14 @@ export class CommentService {
   }
 
   async delete(commentId: string, userId: string): Promise<void> {
-    const comment = await this.commentRepository.findOneBy({id: commentId});
-    if(comment?.author.id!= userId)
-      throw new ForbiddenException('You are not allowed to delete this comment');
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations: ['author'],
+    });
+    if (comment?.author.id != userId)
+      throw new ForbiddenException(
+        'You are not allowed to delete this comment',
+      );
 
     const result = await this.commentRepository.delete(commentId);
     if (result.affected === 0) {
@@ -45,15 +58,27 @@ export class CommentService {
     }
   }
 
-  async getById(commentId: string): Promise<Comment> {
-    const comment = await this.commentRepository.findOne({
-      where: { id: commentId },
-      relations: ['author', 'meme'],
+  async getByMemeId(memeId: string): Promise<any[]> {
+    const comments = await this.commentRepository.find({
+      where: { meme: { id: memeId } },
+      relations: ['author'],
     });
 
-    if (!comment) {
-      throw new NotFoundException(`Comment id "${commentId}" not found`);    }
+    if (!comments) {
+      throw new NotFoundException(`Comment for meme id "${memeId}" not found`);
+    }
 
-    return comment;
+    const formattedComments = await Promise.all(
+      comments.map(async (comment) => {
+        return {
+          id: comment.id,
+          text: comment.text,
+          createdAt: comment.createdAt,
+          author: comment.author.username,
+        };
+      }),
+    );
+
+    return formattedComments;
   }
 }
