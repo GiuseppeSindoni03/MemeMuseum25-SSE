@@ -87,6 +87,25 @@ export class MemeService {
     return formatted;
   }
 
+    async getMyMemes( userId: string): Promise<MemeResponseDto[]> {
+    const memes = await this.memeRepository.find({
+      where: {
+        author: { id: userId },
+      },
+      relations: [
+        'author',
+        'tags',
+        'comments',
+        'comments.author',
+        'votes',
+        'votes.user',
+      ],
+    });
+
+    const formatted = await this.formatMemes(memes, userId);
+    return formatted;
+  }
+
   async search(
     searchDto: SearchDto,
     userId?: string,

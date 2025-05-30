@@ -48,8 +48,29 @@ export class MemeController {
   }
 
   @Post('/search')
-  search(@Body() searchDto: SearchDto, @GetUser() user: User): Promise<MemeResponseDto[]> {
-    return this.memeService.search(searchDto,user?.id);
+  search(
+    @Body() searchDto: SearchDto,
+    @GetUser() user: User,
+  ): Promise<MemeResponseDto[]> {
+    return this.memeService.search(searchDto, user?.id);
+  }
+
+  @Get('/today')
+  getTodayMemes(): Promise<MemeResponseDto[]> {
+    return this.memeService.getTodayMeme();
+  }
+
+  @Get('/mine')
+  @UseGuards(AuthGuard('jwt'))
+  getMyMemes(@GetUser() user: User,): Promise<MemeResponseDto[]> {
+    console.log("test");
+    return this.memeService.getMyMemes(user.id);
+  }
+
+  @Get('/my-upvoted-memes')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyUpvotedMemes(@GetUser() user: User) {
+    return this.memeService.getMyUpvotedMemes(user.id);
   }
 
   @UseGuards(JwtOptionalAuthGuard)
@@ -61,17 +82,6 @@ export class MemeController {
     if (user) return this.memeService.getById(memeId, user.id);
 
     return this.memeService.getById(memeId);
-  }
-
-  @Get('/today/rotation')
-  getTodayMemes(): Promise<MemeResponseDto[]> {
-    return this.memeService.getTodayMeme();
-  }
-
-  @Get('/my/upvoted-memes')
-  @UseGuards(AuthGuard('jwt'))
-  async getMyUpvotedMemes(@GetUser() user: User,) {
-    return this.memeService.getMyUpvotedMemes(user.id);
   }
 
   @Delete('/:id')
