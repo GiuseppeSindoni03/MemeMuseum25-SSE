@@ -63,7 +63,6 @@ export class MemeController {
   @Get('/mine')
   @UseGuards(AuthGuard('jwt'))
   getMyMemes(@GetUser() user: User,): Promise<MemeResponseDto[]> {
-    console.log("test");
     return this.memeService.getMyMemes(user.id);
   }
 

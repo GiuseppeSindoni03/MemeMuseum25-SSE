@@ -9,9 +9,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger();
 
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+  app.useStaticAssets(join('/home/dietideals/Scrivania/UploadsMemeMuseum'), {
     prefix: '/uploads',
   });
+  
   app.enableCors({
     origin: ['http://localhost:5173', 'http://47.53.82.133:5173'],
     credentials: true, // se usi cookie o auth

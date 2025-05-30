@@ -202,10 +202,7 @@ export class MemeService {
     }
 
     const filePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'uploads',
+      '/home/dietideals/Scrivania/UploadsMemeMuseum',
       path.basename(meme.imageUrl),
     );
 
