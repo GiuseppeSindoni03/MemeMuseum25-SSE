@@ -8,7 +8,6 @@ import {
   Delete,
   UploadedFile,
   UseGuards,
-  UnauthorizedException,
   ClassSerializerInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,7 +17,6 @@ import { FileUploadInterceptor } from 'src/common/file-upload.interceptor';
 import { GetUser } from 'src/common/get-user.decorator';
 import { User } from 'src/user/user.entity';
 import { AuthGuard } from '@nestjs/passport';
-import { Comment } from 'src/comment/comment.entity';
 import { JwtOptionalAuthGuard } from 'src/common/jwt-optional-auth.guard';
 import { SearchDto } from './dto/search.dto';
 import { MemeResponseDto } from './dto/meme-response.dto';

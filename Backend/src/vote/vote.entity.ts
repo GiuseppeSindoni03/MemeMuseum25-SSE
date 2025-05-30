@@ -1,4 +1,3 @@
-// src/votes/vote.entity.ts
 import { Meme } from 'src/meme/meme.entity';
 import { User } from 'src/user/user.entity';
 import {

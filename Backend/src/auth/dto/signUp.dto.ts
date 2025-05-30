@@ -2,9 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
-  IsPhoneNumber,
   IsString,
   IsStrongPassword,
 } from 'class-validator';

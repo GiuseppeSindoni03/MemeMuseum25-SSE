@@ -15,18 +15,18 @@ async function bootstrap() {
   
   app.enableCors({
     origin: ['http://localhost:5173', 'http://47.53.82.133:5173'],
-    credentials: true, // se usi cookie o auth
+    credentials: true,
   });
   
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // Trasforma i payload in DTO automaticamente
       whitelist: true, // Rimuove proprietà non dichiarate nei DTO
-      forbidNonWhitelisted: true, // (opzionale) Lancia errore se ci sono proprietà extra
+      forbidNonWhitelisted: true, //Lancia errore se ci sono proprietà extra
     }),
   );
   app.useGlobalInterceptors(new TransformInterceptor());
-  await app.listen(process.env.PORT ?? 3000);
-  logger.log(`Application listening on port ${process.env.PORT ?? 3000}`);
+  await app.listen(process.env.PORT ?? 3001);
+  logger.log(`Application listening on port ${process.env.PORT ?? 3001}`);
 }
 bootstrap();

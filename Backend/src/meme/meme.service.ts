@@ -11,7 +11,6 @@ import { User } from 'src/user/user.entity';
 import * as path from 'path';
 import * as fs from 'fs';
 import { TagService } from 'src/tag/tag.service';
-import { Comment } from 'src/comment/comment.entity';
 import { Vote, VoteType } from 'src/vote/vote.entity';
 import { SearchDto } from './dto/search.dto';
 import { MemeResponseDto } from './dto/meme-response.dto';
@@ -177,7 +176,6 @@ export class MemeService {
     const memesPerDay = 10;
     const startIndex = dayOfYear % allValidMemes.length;
 
-    // Costruisci il blocco ciclico di 10 meme a partire da startIndex
     const dailyMemes: MemeResponseDto[] = [];
     for (let i = 0; i < memesPerDay && i < allValidMemes.length; i++) {
       const index = (startIndex + i) % allValidMemes.length;
