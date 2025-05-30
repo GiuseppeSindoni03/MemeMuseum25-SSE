@@ -1,5 +1,5 @@
 import { Navbar, Container } from "react-bootstrap";
-import "./Navbar.css";
+import "./NavBar.css";
 import { IoPersonAddOutline, IoAddOutline } from "react-icons/io5";
 import logo from "../assets/logo.png";
 import UserMenu from "./UserMenu";

@@ -86,21 +86,21 @@ export default function Auth({ showModal, onClickClose }) {
       newErrors.email = "Email non valida.";
     }
 
-    if (password.length < 8) {
-      newErrors.password = "La password deve avere almeno 8 caratteri.";
-    } else if (!/[a-z]/.test(password)) {
-      newErrors.password =
-        "La password deve contenere almeno una lettera minuscola.";
-    } else if (!/[A-Z]/.test(password)) {
-      newErrors.password =
-        "La password deve contenere almeno una lettera maiuscola.";
-    } else if (!/\d/.test(password)) {
-      newErrors.password = "La password deve contenere almeno un numero.";
-    } else if (!/[^A-Za-z0-9]/.test(password)) {
-      newErrors.password = "La password deve contenere almeno un simbolo.";
-    }
-
     if (isRegistering) {
+      if (password.length < 8) {
+        newErrors.password = "La password deve avere almeno 8 caratteri.";
+      } else if (!/[a-z]/.test(password)) {
+        newErrors.password =
+          "La password deve contenere almeno una lettera minuscola.";
+      } else if (!/[A-Z]/.test(password)) {
+        newErrors.password =
+          "La password deve contenere almeno una lettera maiuscola.";
+      } else if (!/\d/.test(password)) {
+        newErrors.password = "La password deve contenere almeno un numero.";
+      } else if (!/[^A-Za-z0-9]/.test(password)) {
+        newErrors.password = "La password deve contenere almeno un simbolo.";
+      }
+
       if (username.length < 5) {
         newErrors.username = "Username deve avere almeno 5 caratteri.";
       }
@@ -138,7 +138,6 @@ export default function Auth({ showModal, onClickClose }) {
           <input
             type="email"
             placeholder="Email"
-            //required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -149,18 +148,15 @@ export default function Auth({ showModal, onClickClose }) {
               <input
                 type="text"
                 placeholder="Username"
-                //required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
               {errors.username && (
                 <p className="input-error">{errors.username}</p>
               )}
-
               <input
                 type="date"
                 placeholder="Data di nascita"
-                //required
                 value={birthdate}
                 onChange={(e) => setBirthdate(e.target.value)}
               />
