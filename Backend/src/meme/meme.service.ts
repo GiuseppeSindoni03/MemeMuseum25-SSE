@@ -14,7 +14,7 @@ import { TagService } from 'src/tag/tag.service';
 import { Comment } from 'src/comment/comment.entity';
 import { Vote, VoteType } from 'src/vote/vote.entity';
 import { SearchDto } from './dto/search.dto';
-import { MemeResponseDto } from './dto/MemeResponse.dto';
+import { MemeResponseDto } from './dto/meme-response.dto';
 
 @Injectable()
 export class MemeService {
@@ -24,9 +24,6 @@ export class MemeService {
 
     @InjectRepository(Vote)
     private voteRepository: Repository<Vote>,
-
-    @InjectRepository(Comment)
-    private commentRepository: Repository<Comment>,
 
     private tagService: TagService,
   ) {}
@@ -84,13 +81,16 @@ export class MemeService {
       ],
     });
 
-    if(!meme) throw new NotFoundException();
+    if (!meme) throw new NotFoundException();
 
     const formatted = await this.formatSingleMeme(meme, userId);
     return formatted;
   }
 
-  async search(searchDto: SearchDto, userId?: string): Promise<MemeResponseDto[]> {
+  async search(
+    searchDto: SearchDto,
+    userId?: string,
+  ): Promise<MemeResponseDto[]> {
     const { title, date, tags } = searchDto;
 
     const query = this.memeRepository
@@ -124,29 +124,29 @@ export class MemeService {
     }
 
     const memes = await query.getMany();
-    const formattedMemes = this.formatMemes(memes,userId);
+    const formattedMemes = this.formatMemes(memes, userId);
     return formattedMemes;
   }
 
-  /* async countVotes(memeId: string): Promise<{ up: number; down: number }> {
-    const [up, down] = await Promise.all([
-      this.voteRepository.count({
-        where: {
-          meme: { id: memeId },
-          type: VoteType.UP,
-        },
-      }),
-      this.voteRepository.count({
-        where: {
-          meme: { id: memeId },
-          type: VoteType.DOWN,
-        },
-      }),
-    ]);
+  async getMyUpvotedMemes(userId: string): Promise<MemeResponseDto[]> {
+    const votes: Vote[] = await this.voteRepository.find({
+      where: {
+        user: { id: userId },
+        type: VoteType.UP,
+      },
+      relations: [
+        'meme',
+        'meme.author',
+        'meme.tags',
+        'meme.votes',
+        'meme.comments',
+      ],
+    });
 
-    return { up, down };
-  } */
+    const upvotedMemes = votes.map((vote) => vote.meme);
 
+    return await this.formatMemes(upvotedMemes, userId);
+  }
   async getTodayMeme(): Promise<MemeResponseDto[]> {
     const allValidMemes = await this.getAll();
 
@@ -166,22 +166,6 @@ export class MemeService {
     }
 
     return dailyMemes;
-  }
-
-  async getComments(memeId: string): Promise<Comment[]> {
-    const found = await this.memeRepository.findOneBy({ id: memeId });
-
-    if (!found) throw new NotFoundException(`Meme id  "${memeId}" not found`);
-
-    return this.commentRepository.find({
-      where: {
-        meme: { id: memeId },
-      },
-      relations: ['author'],
-      order: {
-        createdAt: 'DESC',
-      },
-    });
   }
 
   async delete(userId: string, id: string): Promise<void> {

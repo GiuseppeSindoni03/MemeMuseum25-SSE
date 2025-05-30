@@ -21,6 +21,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Comment } from 'src/comment/comment.entity';
 import { JwtOptionalAuthGuard } from 'src/common/jwt-optional-auth.guard';
 import { SearchDto } from './dto/search.dto';
+import { MemeResponseDto } from './dto/meme-response.dto';
 
 @Controller('meme')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -40,14 +41,14 @@ export class MemeController {
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get()
-  getAllMemes(@GetUser() user: User): Promise<any[]> {
+  getAllMemes(@GetUser() user: User): Promise<MemeResponseDto[]> {
     if (user) return this.memeService.getAll(user.id);
 
     return this.memeService.getAll();
   }
 
   @Post('/search')
-  search(@Body() searchDto: SearchDto, @GetUser() user: User): Promise<any[]> {
+  search(@Body() searchDto: SearchDto, @GetUser() user: User): Promise<MemeResponseDto[]> {
     return this.memeService.search(searchDto,user?.id);
   }
 
@@ -62,21 +63,15 @@ export class MemeController {
     return this.memeService.getById(memeId);
   }
 
- /* @Get('/vote/:memeId')
-  getVoteCount(
-    @Param('memeId') memeId: string,
-  ): Promise<{ up: number; down: number }> {
-    return this.memeService.countVotes(memeId);
-  } */
-
   @Get('/today/rotation')
-  getTodayMemes(): Promise<any[]> {
+  getTodayMemes(): Promise<MemeResponseDto[]> {
     return this.memeService.getTodayMeme();
   }
 
-  @Get('/comments/:memeId')
-  getComments(@Param('memeId') memeId: string): Promise<Comment[]> {
-    return this.memeService.getComments(memeId);
+  @Get('/my/upvoted-memes')
+  @UseGuards(AuthGuard('jwt'))
+  async getMyUpvotedMemes(@GetUser() user: User,) {
+    return this.memeService.getMyUpvotedMemes(user.id);
   }
 
   @Delete('/:id')
