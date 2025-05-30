@@ -6,7 +6,7 @@ export class CreateMemeDto {
 title: string;
     
 @IsArray()
+@IsOptional()
 @IsString({ each: true })
 tags: string[];
-    
 }

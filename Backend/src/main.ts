@@ -13,7 +13,7 @@ async function bootstrap() {
     prefix: '/uploads',
   });
   app.enableCors({
-    origin: 'http://localhost:5173', // <-- React dev server (vite)
+    origin: ['http://localhost:5173', 'http://47.53.82.133:5173'],
     credentials: true, // se usi cookie o auth
   });
   

@@ -4,17 +4,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateMemeDto } from './dto/create-meme.dto';
-import { UpdateMemeDto } from './dto/update-meme.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Meme } from './meme.entity';
 import { User } from 'src/user/user.entity';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Tag } from 'src/tag/tag.entity';
 import { TagService } from 'src/tag/tag.service';
 import { Comment } from 'src/comment/comment.entity';
 import { Vote, VoteType } from 'src/vote/vote.entity';
+import { SearchDto } from './dto/search.dto';
+import { MemeResponseDto } from './dto/MemeResponse.dto';
 
 @Injectable()
 export class MemeService {
@@ -61,49 +61,17 @@ export class MemeService {
     };
   }
 
-  async getAll(userId?: string): Promise<any[]> {
+  async getAll(userId?: string): Promise<MemeResponseDto[]> {
     const memes = await this.memeRepository.find({
       relations: ['author', 'tags', 'comments', 'votes'],
       order: { createdAt: 'DESC' },
     });
 
-    const formattedMemes = await Promise.all(
-      memes.map(async (meme) => {
-        const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
-        const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
-        let userVoteType: 'UP' | 'DOWN' | null = null;
-
-        if (userId) {
-          const userVote = await this.voteRepository.findOne({
-            where: {
-              meme: { id: meme.id },
-              user: { id: userId },
-            },
-            select: ['id', 'type'],
-          });
-
-          userVoteType = userVote?.type ?? null;
-        }
-
-        return {
-          id: meme.id,
-          title: meme.title,
-          imageUrl: meme.imageUrl,
-          createdAt: meme.createdAt,
-          author: meme.author.username,
-          upvote: upvotes,
-          downvote: downvotes,
-          userVote: userVoteType,
-          tags: meme.tags.map((tag) => tag.name),
-          commentsCount: meme.comments.length,
-        };
-      }),
-    );
-
-    return formattedMemes;
+    const formatted = await this.formatMemes(memes, userId);
+    return formatted;
   }
 
-  async getById(memeId: string, userId?: string): Promise<any> {
+  async getById(memeId: string, userId?: string): Promise<MemeResponseDto> {
     const meme = await this.memeRepository.findOne({
       where: { id: memeId },
       relations: [
@@ -116,39 +84,51 @@ export class MemeService {
       ],
     });
 
-    if (!meme) throw new NotFoundException(`Meme id  "${memeId}" not found`);
+    if(!meme) throw new NotFoundException();
 
-    const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
-    const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
-    let userVoteType: 'UP' | 'DOWN' | null = null;
-
-    if (userId) {
-      const userVote = await this.voteRepository.findOne({
-        where: {
-          meme: { id: meme.id },
-          user: { id: userId },
-        },
-        select: ['id', 'type'],
-      });
-
-      userVoteType = userVote?.type ?? null;
-    }
-
-    return {
-      id: meme.id,
-      title: meme.title,
-      imageUrl: meme.imageUrl,
-      createdAt: meme.createdAt,
-      author: meme.author.username,
-      upvote: upvotes,
-      downvote: downvotes,
-      userVote: userVoteType,
-      tags: meme.tags.map((tag) => tag.name),
-      commentsCount: meme.comments.length,
-    };
+    const formatted = await this.formatSingleMeme(meme, userId);
+    return formatted;
   }
 
-  async countVotes(memeId: string): Promise<{ up: number; down: number }> {
+  async search(searchDto: SearchDto, userId?: string): Promise<MemeResponseDto[]> {
+    const { title, date, tags } = searchDto;
+
+    const query = this.memeRepository
+      .createQueryBuilder('meme')
+      .leftJoinAndSelect('meme.author', 'author')
+      .leftJoinAndSelect('meme.tags', 'tags')
+      .leftJoinAndSelect('meme.comments', 'comments')
+      .leftJoinAndSelect('meme.votes', 'votes')
+      .orderBy('meme.createdAt', 'DESC');
+
+    if (title) {
+      query.andWhere('LOWER(meme.title) LIKE LOWER(:title)', {
+        title: `%${title}%`,
+      });
+    }
+
+    if (date) {
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+
+      query.andWhere('meme.createdAt BETWEEN :start AND :end', {
+        start,
+        end,
+      });
+    }
+
+    if (tags && tags.length > 0) {
+      query.andWhere('tags.name IN (:...tags)', { tags });
+    }
+
+    const memes = await query.getMany();
+    const formattedMemes = this.formatMemes(memes,userId);
+    return formattedMemes;
+  }
+
+  /* async countVotes(memeId: string): Promise<{ up: number; down: number }> {
     const [up, down] = await Promise.all([
       this.voteRepository.count({
         where: {
@@ -165,6 +145,27 @@ export class MemeService {
     ]);
 
     return { up, down };
+  } */
+
+  async getTodayMeme(): Promise<MemeResponseDto[]> {
+    const allValidMemes = await this.getAll();
+
+    const dayOfYear = Math.floor(
+      (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    const memesPerDay = 10;
+    const startIndex = dayOfYear % allValidMemes.length;
+
+    // Costruisci il blocco ciclico di 10 meme a partire da startIndex
+    const dailyMemes: MemeResponseDto[] = [];
+    for (let i = 0; i < memesPerDay && i < allValidMemes.length; i++) {
+      const index = (startIndex + i) % allValidMemes.length;
+      dailyMemes.push(allValidMemes[index]);
+    }
+
+    return dailyMemes;
   }
 
   async getComments(memeId: string): Promise<Comment[]> {
@@ -176,15 +177,11 @@ export class MemeService {
       where: {
         meme: { id: memeId },
       },
-      relations: ['author'], // include info sull'autore del commento
+      relations: ['author'],
       order: {
         createdAt: 'DESC',
       },
     });
-  }
-
-  update(id: number, updateMemeDto: UpdateMemeDto) {
-    return `This action updates a #${id} meme`;
   }
 
   async delete(userId: string, id: string): Promise<void> {
@@ -221,5 +218,49 @@ export class MemeService {
       id: id,
       author: { id: userId } as User,
     });
+  }
+
+  async formatMemes(
+    memes: Meme[],
+    userId?: string,
+  ): Promise<MemeResponseDto[]> {
+    return await Promise.all(
+      memes.map((meme) => this.formatSingleMeme(meme, userId)),
+    );
+  }
+
+  async formatSingleMeme(
+    meme: Meme,
+    userId?: string,
+  ): Promise<MemeResponseDto> {
+    const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
+    const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
+
+    let userVoteType: 'UP' | 'DOWN' | null = null;
+
+    if (userId) {
+      const userVote = await this.voteRepository.findOne({
+        where: {
+          meme: { id: meme.id },
+          user: { id: userId },
+        },
+        select: ['id', 'type'],
+      });
+
+      userVoteType = userVote?.type ?? null;
+    }
+
+    return {
+      id: meme.id,
+      title: meme.title,
+      imageUrl: meme.imageUrl,
+      createdAt: meme.createdAt,
+      author: meme.author.username,
+      upvote: upvotes,
+      downvote: downvotes,
+      userVote: userVoteType,
+      tags: meme.tags.map((tag) => tag.name),
+      commentsCount: meme.comments.length,
+    };
   }
 }

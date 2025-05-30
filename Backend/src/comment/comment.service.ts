@@ -62,6 +62,7 @@ export class CommentService {
     const comments = await this.commentRepository.find({
       where: { meme: { id: memeId } },
       relations: ['author'],
+      order: { createdAt: 'DESC' },
     });
 
     if (!comments) {

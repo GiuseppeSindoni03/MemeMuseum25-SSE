@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from 'src/comment/comment.entity';
 import { GetUser } from 'src/common/get-user.decorator';
 import { User } from 'src/user/user.entity';
