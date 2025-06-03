@@ -1,6 +1,6 @@
 import { FaUserCircle } from "react-icons/fa";
 import "./Profile.css";
-import { useAuth } from "../services/AuthContext";
+import { useAuth } from "../../services/AuthContext";
 
 export default function Profile({ }) {
   const { user, isLoggedIn } = useAuth();

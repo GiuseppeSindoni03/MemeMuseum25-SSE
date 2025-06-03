@@ -70,7 +70,7 @@
   color: #767777;
 }
 
-.auth-modal form button {
+.auth-modal form > button:not(.password-toggle-button) {
   width: 100%;
   padding: 12px;
   background-color: #2563eb;
@@ -83,11 +83,11 @@
   transition: background-color 0.2s ease-in-out;
   margin-bottom: 10px;
 }
-.auth-modal form button:hover {
+.auth-modal form > button:not(.password-toggle-button):hover {
   background-color: #1e4ed8;    
 }
 
-.auth-modal form button:active {
+.auth-modal form > button:not(.password-toggle-button):active {
   background-color: #1e40af;       
   transform: scale(0.97);          
 }
@@ -108,4 +108,21 @@
   font-size: 13px;
   margin-top: 4px;
   margin-bottom: 8px;
+}
+
+.passwordToggleIcon {
+  all: unset; 
+  position: absolute;
+  top: 35%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: #666;
+  padding: 2px;
+  transition: color 0.2s ease;
+}
+
+.passwordToggleIcon:hover {
+  color: #000;       /* cambia colore al passaggio del mouse */
 }

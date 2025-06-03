@@ -1,17 +1,17 @@
 import "./MemeCard.css";
 import { IoThumbsDownOutline, IoThumbsUpOutline } from "react-icons/io5";
 import { GoComment } from "react-icons/go";
-import { createOrUpdateVote } from "../services/voteService";
+import { createOrUpdateVote } from "../../services/voteService";
 import {
   fetchComments,
   postComment,
   deleteComment,
-} from "../services/commentService";
-import { getMemeById, deleteMeme } from "../services/memeService";
-import { useAuth } from "../services/AuthContext";
+} from "../../services/commentService";
+import { getMemeById, deleteMeme } from "../../services/memeService";
+import { useAuth } from "../../services/AuthContext";
 import { useState } from "react";
 import { IoPerson, IoTrashOutline } from "react-icons/io5";
-import { handleApiError } from "../utility/handleApiError";
+import { handleApiError } from "../../utility/handleApiError";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function MemeCard({

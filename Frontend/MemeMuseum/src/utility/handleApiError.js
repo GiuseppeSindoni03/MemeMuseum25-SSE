@@ -8,6 +8,6 @@ export function handleApiError(error,showLogin) {
     alert("Questo account risulta già registrato.");
   }
   else {
-    alert(error.message || "Si è verificato un errore imprevisto.");
+    alert("Si è verificato un errore imprevisto. Prova a ricaricare la pagina");
   }
 }

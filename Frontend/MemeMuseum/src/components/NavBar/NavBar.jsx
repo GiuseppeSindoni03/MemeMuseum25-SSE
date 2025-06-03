@@ -1,10 +1,10 @@
 import { Navbar, Container } from "react-bootstrap";
 import "./NavBar.css";
 import { IoPersonAddOutline, IoAddOutline } from "react-icons/io5";
-import logo from "../assets/logo.png";
-import UserMenu from "./UserMenu";
-import SearchBar from "./SearchBar";
-import { useAuth } from "../services/AuthContext";
+import logo from "../../assets/logo.png";
+import UserMenu from "./UserMenu/UserMenu";
+import SearchBar from "./SearchBar/SearchBar";
+import { useAuth } from "../../services/AuthContext";
 
 export default function AppNavbar({
   onClick,
@@ -13,6 +13,7 @@ export default function AppNavbar({
   onSearch,
   filters,
   setFilters,
+  onClickProfile
 }) {
   const { isLoggedIn } = useAuth();
 
@@ -64,7 +65,7 @@ export default function AppNavbar({
 
               {/* Mostra UserMenu solo su desktop */}
               <div className="d-none d-md-block">
-                <UserMenu />
+                <UserMenu onClickProfile={onClickProfile}/>
               </div>
             </>
           ) : (

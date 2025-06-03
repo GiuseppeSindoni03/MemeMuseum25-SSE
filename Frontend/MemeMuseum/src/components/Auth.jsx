@@ -6,6 +6,8 @@ import { useAuth } from "../services/AuthContext";
 import { loginApi, signUpApi } from "../services/authService";
 import { getMe } from "../services/userService";
 import { toast } from "react-toastify";
+import { BiSolidHide } from "react-icons/bi";
+import { BiShow } from "react-icons/bi";
 
 export default function Auth({ showModal, onClickClose }) {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -174,23 +176,13 @@ export default function Auth({ showModal, onClickClose }) {
               style={{ paddingRight: "40px" }}
             />
 
-            <span
+            <button
+              type="button"
+              className="passwordToggleIcon"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                top: 0,
-                bottom: 10,
-                right: "10px",
-                display: "flex",
-                alignItems: "center",
-                cursor: "pointer",
-                color: "#999",
-                fontSize: "18px",
-                userSelect: "none",
-              }}
             >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
+              {showPassword ? <BiSolidHide /> : <BiShow />}
+            </button>
           </div>
           {errors.password && <p className="input-error">{errors.password}</p>}
 

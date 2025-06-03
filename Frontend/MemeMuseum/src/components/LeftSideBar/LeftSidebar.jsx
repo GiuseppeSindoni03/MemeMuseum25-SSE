@@ -1,4 +1,4 @@
-import "./LeftSidebar.css";
+import React, { useEffect, useRef } from "react";
 import {
   IoHomeOutline,
   IoTodayOutline,
@@ -6,7 +6,8 @@ import {
   IoPersonOutline,
   IoLogOutOutline,
 } from "react-icons/io5";
-import { useAuth } from "../services/AuthContext";
+import { useAuth } from "../../services/AuthContext";
+import "./LeftSidebar.css";
 
 export default function LeftSidebar({
   currentPage,
@@ -14,14 +15,40 @@ export default function LeftSidebar({
   navigateToHome,
   navigateToProfile,
   clickOnMyUpVotedMeme,
+  setSidebarOpen,
 }) {
   const { isLoggedIn, logout } = useAuth();
+  
+  // Reference per la sidebar
+  const sidebarRef = useRef(null);
+
+  // Funzione per chiudere la sidebar
+  const closeSidebar = () => setSidebarOpen(false);
+
+  // Aggiungi un event listener per i clic fuori dalla sidebar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        closeSidebar();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="left-sidebar sidebar-sticky">
+    <div ref={sidebarRef} className="left-sidebar sidebar-sticky">
       <ul className="menu">
         <li
           className={`menu-item ${currentPage === "home" ? "selected" : ""}`}
-          onClick={navigateToHome}
+          onClick={() => {
+            navigateToHome();
+            closeSidebar(); // Chiudi la sidebar quando si clicca su un elemento
+          }}
         >
           <i className="icon">
             <IoHomeOutline />
@@ -32,7 +59,10 @@ export default function LeftSidebar({
           className={`menu-item ${
             currentPage === "todayMemes" ? "selected" : ""
           }`}
-          onClick={clickOnTodayMeme}
+          onClick={() => {
+            clickOnTodayMeme();
+            closeSidebar();
+          }}
         >
           <i className="icon">
             <IoTodayOutline />
@@ -44,7 +74,10 @@ export default function LeftSidebar({
             className={`menu-item ${
               currentPage === "myUpvotes" ? "selected" : ""
             }`}
-            onClick={clickOnMyUpVotedMeme}
+            onClick={() => {
+              clickOnMyUpVotedMeme();
+              closeSidebar();
+            }}
           >
             <i className="icon">
               <IoThumbsUpOutline />
@@ -57,7 +90,10 @@ export default function LeftSidebar({
             className={`menu-item ${
               currentPage === "profile" ? "selected" : ""
             }`}
-            onClick={navigateToProfile}
+            onClick={() => {
+              navigateToProfile();
+              closeSidebar();
+            }}
           >
             <i className="icon">
               <IoPersonOutline />
@@ -66,7 +102,7 @@ export default function LeftSidebar({
           </li>
         )}
         {isLoggedIn && (
-          <li className="menu-item d-md-none" onClick={logout}>
+          <li className="menu-item d-md-none" onClick={() => logout()}>
             <i className="icon">
               <IoLogOutOutline />
             </i>

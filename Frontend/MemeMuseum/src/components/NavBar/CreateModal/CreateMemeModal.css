@@ -29,6 +29,13 @@
     width: 95%;
     height: auto;
   }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto; 
+  }
 }
 
 .modal-left,

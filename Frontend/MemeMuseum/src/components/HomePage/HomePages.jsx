@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { fetchMemes, searchMeme } from "../services/memeService";
-import MemeCard from "../components/MemeCard";
+import MemeCard from "./MemeCard";
 
 export default function HomePage({
   memes,

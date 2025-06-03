@@ -1,11 +1,11 @@
 import "./App.css";
-import HomePage from "./pages/HomePages";
-import Profile from "./pages/Profile";
+import HomePage from "./components/HomePage/HomePages";
+import Profile from "./components/Profile/Profile";
 import { AuthProvider } from "./services/AuthContext";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
-import AppNavbar from "./components/NavBar";
-import LeftSidebar from "./components/LeftSidebar";
+import AppNavbar from "./components/NavBar/NavBar";
+import LeftSidebar from "./components/LeftSideBar/LeftSidebar";
 import {
   fetchMemes,
   searchMeme,
@@ -14,7 +14,7 @@ import {
   getMyMemes
 } from "./services/memeService";
 import Auth from "./components/Auth";
-import CreateMemeModal from "./components/CreateMemeModal";
+import CreateMemeModal from "./components/NavBar/CreateModal/CreateMemeModal";
 import { Container, Row, Col } from "react-bootstrap";
 import { handleApiError } from "./utility/handleApiError";
 import "react-toastify/dist/ReactToastify.css";
@@ -90,6 +90,7 @@ function App() {
           onSearch={() => loadMemes("search")}
           filters={filters}
           setFilters={setFilters}
+          onClickProfile= {() => loadMemes("profile")}
         />
 
         <CreateMemeModal
@@ -131,6 +132,7 @@ function App() {
                 navigateToProfile={() => loadMemes("profile")}
                 clickOnTodayMeme={() => loadMemes("todayMemes")}
                 clickOnMyUpVotedMeme={() => loadMemes("myUpvotes")}
+                setSidebarOpen={setSidebarOpen}
               />
             </div>
           )}
@@ -143,6 +145,7 @@ function App() {
                 navigateToProfile={() => loadMemes("profile")}
                 clickOnTodayMeme={() => loadMemes("todayMemes")}
                 clickOnMyUpVotedMeme={() => loadMemes("myUpvotes")}
+                setSidebarOpen={setSidebarOpen}
               />
             </Col>
 

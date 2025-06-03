@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Form, Collapse } from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
 import "./SearchBar.css";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";

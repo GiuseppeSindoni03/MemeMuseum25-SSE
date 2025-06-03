@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../services/AuthContext";
+import { useAuth } from "../../../services/AuthContext";
 import { FiUser } from "react-icons/fi";
 import "./UserMenu.css";
 import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 
-export default function UserMenu() {
+export default function UserMenu({onClickProfile}) {
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef();
@@ -28,7 +28,7 @@ export default function UserMenu() {
 
       {open && (
         <div className="dropdown">
-          <button onClick={() => alert("Vai al profilo")}> <IoPersonOutline /> Profilo</button>
+          <button onClick={onClickProfile}> <IoPersonOutline /> Profilo</button>
           <button onClick={logout}><IoLogOutOutline /> Logout</button>
         </div>
       )}
