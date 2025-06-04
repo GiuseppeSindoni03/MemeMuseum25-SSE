@@ -5,6 +5,7 @@ export class CreateMemeDto {
 @IsString()
 title: string;
     
+@Transform(({ value }) => (Array.isArray(value) ? value : [value]))
 @IsArray()
 @IsOptional()
 @IsString({ each: true })
