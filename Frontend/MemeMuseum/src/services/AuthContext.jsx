@@ -20,6 +20,7 @@ export function AuthProvider({ children }) {
   const login = (token) => {
     localStorage.setItem("accessToken", token);
     setIsLoggedIn(true);
+    window.location.reload();
   };
 
   const logout = () => {
