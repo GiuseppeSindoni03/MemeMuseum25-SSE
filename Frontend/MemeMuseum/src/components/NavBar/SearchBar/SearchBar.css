@@ -23,8 +23,8 @@
 }
 
 .search-bar-wrapper input.form-control {
-  background-color: #ccc;    /* grigio scuro coerente */
-  color: black;               /* testo leggibile */
+  background-color: #ccc;   
+  color: black;             
   padding: 8px 12px;
   transition: border 0.2s ease, box-shadow 0.2s ease;
   font-size: 14px;
@@ -36,7 +36,6 @@
   border: 0;
 }
 
-/* Dropdown avanzata */
 .search-bar-wrapper .search-filters {
   background-color: #1f2125 !important; 
   position: absolute;
@@ -50,14 +49,12 @@
               0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Etichette */
 .search-filters label {
   color: #cbd5e1;
   font-size: 0.85rem;
   margin-bottom: 4px;
 }
 
-/* Campi input nei filtri */
 .search-filters input.form-control {
   background-color: #2a2c30;
   color: #f1f5f9;
@@ -73,7 +70,6 @@
   outline: none;
 }
 
-/* Pulsanti */
 .search-filters .btn {
   font-size: 14px;
   padding: 6px 14px;

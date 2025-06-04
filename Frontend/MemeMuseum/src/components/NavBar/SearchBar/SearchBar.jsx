@@ -44,7 +44,6 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
 
       <Collapse in={expanded}>
         <div className="search-filters mt-2 bg-dark p-3 rounded shadow">
-          {/* Data */}
           <Form.Group className="mb-2">
             <Form.Label className="text-light">Data caricamento</Form.Label>
             <Form.Control
@@ -66,7 +65,6 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
             />
           </Form.Group>
 
-          {/* Pulsanti */}
           <div className="d-flex justify-content-end">
             <button className="btn btn-outline-light me-2" onClick={onSearch}>
               Cerca

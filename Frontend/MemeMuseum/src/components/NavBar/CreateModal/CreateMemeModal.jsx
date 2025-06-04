@@ -1,7 +1,7 @@
 import "./CreateMemeModal.css";
-import "@pathofdev/react-tag-input/build/index.css"; // necessario per i nomi di classe
+import "@pathofdev/react-tag-input/build/index.css";
 import { useEffect, useState } from "react";
-import logo from "../../../assets/logo.png"; // metti il tuo logo
+import logo from "../../../assets/logo.png";
 import { createMeme } from "../../../services/memeService";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
@@ -79,7 +79,6 @@ export default function CreateMemeModal({ showModal, onClickClose, onCreate }) {
   return (
     <div className="modal-overlay" onClick={onClickClose}>
       <div className="modal-horizontal" onClick={(e) => e.stopPropagation()}>
-        {/* Colonna immagine */}
         <div className="modal-left">
           <input
             type="file"
@@ -98,7 +97,6 @@ export default function CreateMemeModal({ showModal, onClickClose, onCreate }) {
           {errors.image && <p className="input-error">{errors.image}</p>}
         </div>
 
-        {/* Colonna contenuto */}
         <div className="modal-right">
           <img src={logo} alt="Logo" className="modal-logo" />
           <h2>Nuovo Meme</h2>

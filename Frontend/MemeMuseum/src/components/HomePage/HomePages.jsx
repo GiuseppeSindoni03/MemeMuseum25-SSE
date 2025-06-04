@@ -29,7 +29,7 @@ export default function HomePage({
           title={meme.title}
           author={meme.author}
           date={meme.createdAt}
-          imageUrl={"http://dietiestates.duckdns.org:3001" + meme.imageUrl}
+          imageUrl={"http://mememuseum.duckdns.org:3001" + meme.imageUrl}
           tags={meme.tags}
           likes={meme.upvote}
           dislikes={meme.downvote}

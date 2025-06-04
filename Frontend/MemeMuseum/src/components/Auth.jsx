@@ -110,7 +110,7 @@ export default function Auth({ showModal, onClickClose }) {
       if (!birthdate) {
         newErrors.birthdate = "La data di nascita è obbligatoria.";
       } else {
-        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const today = new Date().toISOString().split("T")[0];
         if (birthdate >= today) {
           newErrors.birthdate = "La data di nascita deve essere nel passato.";
         }

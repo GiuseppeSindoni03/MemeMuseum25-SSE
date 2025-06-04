@@ -19,13 +19,9 @@ export default function LeftSidebar({
 }) {
   const { isLoggedIn, logout } = useAuth();
   
-  // Reference per la sidebar
   const sidebarRef = useRef(null);
-
-  // Funzione per chiudere la sidebar
   const closeSidebar = () => setSidebarOpen(false);
 
-  // Aggiungi un event listener per i clic fuori dalla sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -47,7 +43,7 @@ export default function LeftSidebar({
           className={`menu-item ${currentPage === "home" ? "selected" : ""}`}
           onClick={() => {
             navigateToHome();
-            closeSidebar(); // Chiudi la sidebar quando si clicca su un elemento
+            closeSidebar();
           }}
         >
           <i className="icon">

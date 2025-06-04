@@ -1,4 +1,3 @@
-/* ========= BASE MEME CARD ========= */
 .meme-card {
   position: relative;
   background-color: #191a1e;
@@ -18,11 +17,10 @@
   background: #f9f9f9;
 }
 
-/* ========= DELETE BUTTON ========= */
 .delete-button {
   background: none;
   border: none;
-  color: #ef4444; /* rosso */
+  color: #ef4444;
   cursor: pointer;
   margin-left: auto;
   font-size: 18px;
@@ -48,7 +46,6 @@
   z-index: 10;
 }
 
-/* ========= MEME HEADER ========= */
 .meme-header {
   width: 100%;
   display: flex;
@@ -65,7 +62,6 @@
   gap: 8px;
 }
 
-/* ========= AUTHOR ========= */
 .meme-author {
     background-color: red;
   display: flex;
@@ -100,7 +96,6 @@
   white-space: nowrap;
 }
 
-/* ========= TAGS ========= */
 .meme-tags {
   display: flex;
   flex-wrap: wrap;
@@ -117,11 +112,10 @@
 }
 
 
-/* ========= IMAGE ========= */
 .meme-image {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3; /* oppure 1 / 1 per quadrato */
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 8px;
   display: flex;
@@ -149,8 +143,6 @@
   z-index: 2;
 }
 
-
-/* ========= FOOTER / ACTIONS ========= */
 .meme-footer {
   display: flex;
   justify-content: flex-start;
@@ -189,7 +181,6 @@
   transform: scale(0.95);
 }
 
-/* ========= COMMENTS ========= */
 .comment {
   padding: 12px;
   margin-top: 20px;
@@ -200,7 +191,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  overflow-wrap: break-word;   /* evita overflow da parole lunghe */
+  overflow-wrap: break-word; 
   word-wrap: break-word;
   max-width: 100%;
 }
@@ -241,10 +232,9 @@
   text-align: left;
   word-break: break-word;
   overflow-wrap: break-word;
-  white-space: pre-wrap; /* mantiene gli \n dell’utente */
+  white-space: pre-wrap;
 }
 
-/* ========= NEW COMMENT BOX ========= */
 .new-comment {
   display: flex;
   flex-direction: column;

@@ -14,15 +14,15 @@ async function bootstrap() {
   });
   
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://47.53.82.133:5173','http://mememuseum.duckdns.org:5173'],
+    origin: ['http://localhost:5173','http://mememuseum.duckdns.org:5173'],
     credentials: true,
   });
   
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, // Trasforma i payload in DTO automaticamente
-      whitelist: true, // Rimuove proprietà non dichiarate nei DTO
-      forbidNonWhitelisted: true, //Lancia errore se ci sono proprietà extra
+      transform: true,
+      whitelist: true, 
+      forbidNonWhitelisted: true,
     }),
   );
   app.useGlobalInterceptors(new TransformInterceptor());

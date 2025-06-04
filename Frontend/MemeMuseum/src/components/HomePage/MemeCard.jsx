@@ -208,7 +208,7 @@ export default function MemeCard({
             ))
           )}
 
-          {/* NUOVO COMMENTO */}
+          
           <div className="new-comment">
             <textarea
               placeholder="Scrivi un commento..."

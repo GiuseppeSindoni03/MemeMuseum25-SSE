@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://dietiestates.duckdns.org:3001";
+const API_BASE_URL = "http://http://mememuseum.duckdns.org:3001";
 //const API_BASE_URL = "http://localhost:3000";
 
 export async function apiFetch(url, options = {}) {
@@ -9,7 +9,6 @@ export async function apiFetch(url, options = {}) {
     Authorization: token ? `Bearer ${token}` : undefined,
   };
 
-  // Solo se non è FormData, aggiungi content-type JSON
   const isFormData = options.body instanceof FormData;
   if (!isFormData) {
     headers["Content-Type"] = "application/json";
@@ -25,7 +24,7 @@ export async function apiFetch(url, options = {}) {
     try {
       body = await response.json();
     } catch {
-      // body rimane vuoto
+      
     }
 
     const error = new Error(body.message || "Errore API");

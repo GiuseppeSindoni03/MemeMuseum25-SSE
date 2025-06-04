@@ -23,9 +23,7 @@ export default function AppNavbar({
         fluid
         className="navbar-container d-flex flex-wrap justify-content-between align-items-center"
       >
-        {/* Sinistra: hamburger (mobile) + logo (desktop) */}
         <div className="d-flex align-items-center">
-          {/* Hamburger solo su mobile */}
           <button
             className="btn btn-outline-light d-md-none me-2"
             onClick={onToggleSidebar}
@@ -34,14 +32,12 @@ export default function AppNavbar({
             ☰
           </button>
 
-          {/* Logo e titolo solo su desktop */}
           <div className="d-none d-md-flex align-items-center">
             <img src={logo} alt="Logo" className="navbar-logo me-2" />
             <span className="navbar-title">MemeMuseum</span>
           </div>
         </div>
 
-        {/* Centro: barra di ricerca sempre visibile */}
         <div className="navbar-search-container mx-auto flex-grow-1 mx-3">
           <SearchBar
             onSearch={onSearch}
@@ -50,7 +46,6 @@ export default function AppNavbar({
           />
         </div>
 
-        {/* Destra: pulsanti utente (login/crea meme/menu) */}
         <div className="d-flex align-items-center">
           {isLoggedIn ? (
             <>
@@ -63,7 +58,6 @@ export default function AppNavbar({
                 <span className="d-none d-md-inline ms-1">Nuovo Meme</span>
               </button>
 
-              {/* Mostra UserMenu solo su desktop */}
               <div className="d-none d-md-block">
                 <UserMenu onClickProfile={onClickProfile}/>
               </div>
