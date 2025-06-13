@@ -39,6 +39,8 @@ export class MemeService {
       imageUrl: `/uploads/${filename}`,
       tags: tags,
       author: { id: user.id },
+      upvoteCount: 0,
+      downvoteCount: 0,
     });
 
     const newMeme = await this.memeRepository.save(meme);
@@ -66,7 +68,24 @@ export class MemeService {
     const formatted = await this.formatMemes(memes, userId);
     return formatted;
   }
+  
+  async getAllPaginated(
+    userId?: string,
+    limit = 10,
+    offset = 0
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const [memes, total] = await this.memeRepository.findAndCount({
+      relations: ['author', 'tags', 'comments', 'votes'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+  
+    const formatted = await this.formatMemes(memes, userId);
+    return { memes: formatted, total };
+  }
 
+  
   async getById(memeId: string, userId?: string): Promise<MemeResponseDto> {
     const meme = await this.memeRepository.findOne({
       where: { id: memeId },
@@ -108,43 +127,59 @@ export class MemeService {
   async search(
     searchDto: SearchDto,
     userId?: string,
-  ): Promise<MemeResponseDto[]> {
-    const { title, date, tags } = searchDto;
-
+    limit = 10,
+    offset = 0,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const { title, date, tags, sortBy } = searchDto;
+  
     const query = this.memeRepository
       .createQueryBuilder('meme')
       .leftJoinAndSelect('meme.author', 'author')
       .leftJoinAndSelect('meme.tags', 'tags')
       .leftJoinAndSelect('meme.comments', 'comments')
-      .leftJoinAndSelect('meme.votes', 'votes')
-      .orderBy('meme.createdAt', 'DESC');
-
+      .leftJoinAndSelect('meme.votes', 'votes');
+  
+    // Filtri
     if (title) {
       query.andWhere('LOWER(meme.title) LIKE LOWER(:title)', {
         title: `%${title}%`,
       });
     }
-
+  
     if (date) {
       const start = new Date(date);
       start.setHours(0, 0, 0, 0);
       const end = new Date(date);
       end.setHours(23, 59, 59, 999);
-
+  
       query.andWhere('meme.createdAt BETWEEN :start AND :end', {
         start,
         end,
       });
     }
-
+  
     if (tags && tags.length > 0) {
       query.andWhere('tags.name IN (:...tags)', { tags });
     }
-
-    const memes = await query.getMany();
-    const formattedMemes = this.formatMemes(memes, userId);
-    return formattedMemes;
+  
+    if (sortBy === 'upvote') {
+      query.orderBy('meme.upvoteCount', 'DESC');
+    } else if (sortBy === 'downvote') {
+      query.orderBy('meme.downvoteCount', 'DESC');
+    } else {
+      query.orderBy('meme.createdAt', 'DESC');
+    }
+  
+    const [memes, total] = await query
+      .skip(offset)
+      .take(limit)
+      .getManyAndCount();
+  
+    const formatted = await this.formatMemes(memes, userId);
+    return { memes: formatted, total };
   }
+  
+  
 
   async getMyUpvotedMemes(userId: string): Promise<MemeResponseDto[]> {
     const votes: Vote[] = await this.voteRepository.find({
@@ -165,6 +200,7 @@ export class MemeService {
 
     return await this.formatMemes(upvotedMemes, userId);
   }
+
   async getTodayMeme(): Promise<MemeResponseDto[]> {
     const allValidMemes = await this.getAll();
 
@@ -231,9 +267,6 @@ export class MemeService {
     meme: Meme,
     userId?: string,
   ): Promise<MemeResponseDto> {
-    const upvotes = meme.votes.filter((v) => v.type === 'UP').length;
-    const downvotes = meme.votes.filter((v) => v.type === 'DOWN').length;
-
     let userVoteType: 'UP' | 'DOWN' | null = null;
 
     if (userId) {
@@ -254,8 +287,8 @@ export class MemeService {
       imageUrl: meme.imageUrl,
       createdAt: meme.createdAt,
       author: meme.author.username,
-      upvote: upvotes,
-      downvote: downvotes,
+      upvote: meme.upvoteCount,
+      downvote: meme.downvoteCount,
       userVote: userVoteType,
       tags: meme.tags.map((tag) => tag.name),
       commentsCount: meme.comments.length,

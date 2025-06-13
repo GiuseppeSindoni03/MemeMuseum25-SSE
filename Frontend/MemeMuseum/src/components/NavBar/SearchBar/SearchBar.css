@@ -39,7 +39,7 @@
 .search-bar-wrapper .search-filters {
   background-color: #1f2125 !important; 
   position: absolute;
-  top: calc(100% + 10px);
+  top: calc(100% + 5px);
   left: 0;
   width: 100%;
   border: 0px  solid #2c2e32;
@@ -94,4 +94,42 @@
 
 .search-filters .btn-secondary:hover {
   background-color: #3a3b3f;
+}
+
+.sort-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.sort-label {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 14px;
+  line-height: 32px;
+}
+
+.search-filters .mm-select {
+  background-color: #2a2c30;
+  color: #f1f5f9;
+  border: 1px solid #3a3b3f;
+  border-radius: 6px;
+  padding: 8px 10px;
+  max-width: 150px;
+  font-size: 14px;
+  font-family: 'Roboto', sans-serif;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23f1f5f9' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: block;
+  margin: 0 auto;
+}
+
+.search-filters .mm-select:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.4);
+  outline: none;
 }

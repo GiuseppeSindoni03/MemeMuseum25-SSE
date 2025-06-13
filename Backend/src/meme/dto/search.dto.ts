@@ -1,4 +1,4 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class SearchDto {
   @IsOptional()
@@ -12,4 +12,8 @@ export class SearchDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
+
+  @IsOptional()
+  @IsIn(['date', 'upvote', 'downvote'])
+  sortBy?: 'date' | 'upvote' | 'downvote';
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Form, Collapse } from "react-bootstrap";
+import { Form, Collapse, Row } from "react-bootstrap";
 import "./SearchBar.css";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
@@ -64,7 +64,20 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
               placeholder="Aggiungi un tag e premi invio"
             />
           </Form.Group>
-
+          <Row className="sort-row align-items-center">
+            <p className="sort-label">Ordina per</p>
+            <select
+              className="mm-select"
+              value={filters.sortBy ?? "date"}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, sortBy: e.target.value }))
+              }
+            >
+              <option value="date">Più recenti</option>
+              <option value="upvote">Più upvotati</option>
+              <option value="downvote">Più downvotati</option>
+            </select>
+          </Row>
           <div className="d-flex justify-content-end">
             <button className="btn btn-outline-light me-2" onClick={onSearch}>
               Cerca

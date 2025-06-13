@@ -10,6 +10,7 @@ import {
   UseGuards,
   ClassSerializerInterceptor,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { MemeService } from './meme.service';
 import { CreateMemeDto } from './dto/create-meme.dto';
@@ -39,19 +40,28 @@ export class MemeController {
 
   @UseGuards(JwtOptionalAuthGuard)
   @Get()
-  getAllMemes(@GetUser() user: User): Promise<MemeResponseDto[]> {
-    if (user) return this.memeService.getAll(user.id);
-
-    return this.memeService.getAll();
+  getAllMemes(
+    @GetUser() user: User,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const parsedLimit = Number(limit) || 10;
+    const parsedOffset = Number(offset) || 0;
+  
+    return this.memeService.getAllPaginated(user?.id, parsedLimit, parsedOffset);
   }
+  
 
   @Post('/search')
   search(
     @Body() searchDto: SearchDto,
     @GetUser() user: User,
-  ): Promise<MemeResponseDto[]> {
-    return this.memeService.search(searchDto, user?.id);
+    @Query('limit') limit = 10,
+    @Query('offset') offset = 0,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    return this.memeService.search(searchDto, user?.id, +limit, +offset);
   }
+  
 
   @Get('/today')
   getTodayMemes(): Promise<MemeResponseDto[]> {

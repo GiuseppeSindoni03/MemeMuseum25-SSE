@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 
 test("has title", async ({ page }) => {
   await page.goto("http://mememuseum.duckdns.org:5173");
-  // Expect the page has a title matching a substring.
   await expect(page).toHaveTitle(/MemeMuseum25/);
 });
 
@@ -38,7 +37,6 @@ test.describe("Authenticated Area", () => {
     const updatedText = await likeBlock.textContent();
     const updatedLikes = parseInt(updatedText?.replace(/\D/g, '') ?? '0', 10);
 
-    
     expect([currentLikes - 1, currentLikes + 1]).toContain(updatedLikes);
   });
 

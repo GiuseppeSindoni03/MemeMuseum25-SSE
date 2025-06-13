@@ -5,13 +5,14 @@ import { AuthProvider } from "./services/AuthContext";
 import { ToastContainer } from "react-toastify";
 import { useEffect, useState } from "react";
 import AppNavbar from "./components/NavBar/NavBar";
+import Pagination from "./components/HomePage/Pagination/Pagination";
 import LeftSidebar from "./components/LeftSideBar/LeftSidebar";
 import {
   fetchMemes,
   searchMeme,
   getTodayMemes,
   getMyUpvotedMemes,
-  getMyMemes
+  getMyMemes,
 } from "./services/memeService";
 import Auth from "./components/Auth";
 import CreateMemeModal from "./components/NavBar/CreateModal/CreateMemeModal";
@@ -29,17 +30,22 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const memesPerPage = 10;
+  const [totalMemes, setTotalMemes] = useState(0);
+  const [currentMemePage, setCurrentMemePage] = useState(1);
+
   const handleCreateMeme = (newMeme) => {
     setMemes((prev) => [newMeme, ...prev]);
   };
 
   useEffect(() => {
     loadMemes("home");
-  }, [setMemes]);
+  }, [setMemes, currentMemePage]);
 
   const loadMemes = async (mode = "home") => {
     setLoading(true);
     setError(null);
+    const offset = (currentMemePage - 1) * memesPerPage;
 
     try {
       let data;
@@ -47,21 +53,42 @@ function App() {
       if (mode === "search") {
         const isEmptySearch =
           !filters.title && filters.tags.length === 0 && !filters.date;
-        data = isEmptySearch ? await fetchMemes() : await searchMeme(filters);
+
+        if (isEmptySearch) {
+          const { memes, total } = await fetchMemes(memesPerPage, offset);
+          data = memes;
+          setTotalMemes(total);
+        } else {
+          const { memes, total } = await searchMeme(
+            filters,
+            memesPerPage,
+            offset
+          );
+          data = memes;
+          setTotalMemes(total);
+        }
+
         setCurrentPage("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (mode === "todayMemes") {
         data = await getTodayMemes();
         setCurrentPage("todayMemes");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (mode === "myUpvotes") {
         data = await getMyUpvotedMemes();
         setCurrentPage("myUpvotes");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       } else if (mode === "profile") {
         data = await getMyMemes();
         console.log("Mymeme: ", data);
         setCurrentPage("profile");
-      }else {
-        data = await fetchMemes();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const { memes, total } = await fetchMemes(memesPerPage, offset);
+        data = memes;
+        setTotalMemes(total);
         setCurrentPage("home");
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
       setMemes(data);
@@ -90,7 +117,7 @@ function App() {
           onSearch={() => loadMemes("search")}
           filters={filters}
           setFilters={setFilters}
-          onClickProfile= {() => loadMemes("profile")}
+          onClickProfile={() => loadMemes("profile")}
         />
 
         <CreateMemeModal
@@ -157,13 +184,29 @@ function App() {
                 (currentPage === "home" ||
                 currentPage === "todayMemes" ||
                 currentPage === "myUpvotes" ? (
-                  <HomePage
-                    memes={memes}
-                    setMemes={setMemes}
-                    onClickNotLogged={() => setShowModal(true)}
-                  />
+                  <>
+                    <div style={{ width: "100%", maxWidth: "750px" }}>
+                      <HomePage
+                        memes={memes}
+                        setMemes={setMemes}
+                        onClickNotLogged={() => setShowModal(true)}
+                      />
+
+                      {currentPage === "home" && totalMemes > memesPerPage && (
+                        <Pagination
+                          totalItems={totalMemes}
+                          itemsPerPage={memesPerPage}
+                          currentPage={currentMemePage}
+                          onPageChange={(page) => setCurrentMemePage(page)}
+                        />
+                      )}
+                    </div>
+                  </>
                 ) : (
-                  <div className="w-100" style={{ maxWidth: '800px', padding: '0px 30px' }}>
+                  <div
+                    className="w-100"
+                    style={{ maxWidth: "800px", padding: "0px 30px" }}
+                  >
                     <Profile
                       user={{
                         username: "vincenzo123",
@@ -171,10 +214,8 @@ function App() {
                         birthdate: "1998-04-20",
                       }}
                     />
-
                     <hr className="my-4" style={{ borderColor: "#444" }} />
                     <h5 className="text-light mb-3">I miei Meme</h5>
-
                     <HomePage
                       memes={memes}
                       setMemes={setMemes}

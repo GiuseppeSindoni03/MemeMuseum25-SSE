@@ -1,8 +1,11 @@
 import { apiFetch } from "../utility/apiFetch";
 
-export async function fetchMemes() {
-  return await apiFetch(`/meme`);
+
+export async function fetchMemes(limit = 10, offset = 0) {
+  const query = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
+  return await apiFetch(`/meme?${query.toString()}`);
 }
+
 
 export async function getTodayMemes() {
   return await apiFetch(`/meme/today`);
@@ -33,8 +36,13 @@ export async function createMeme({ title, tags, imageFile }) {
   });
 }
 
-export async function searchMeme({ title, date, tags }) {
-  return await apiFetch(`/meme/search`, {
+export async function searchMeme({ title, date, tags, sortBy }, limit = 10, offset = 0) {
+  const query = new URLSearchParams({
+    limit: limit.toString(),
+    offset: offset.toString(),
+  });
+
+  return await apiFetch(`/meme/search?${query.toString()}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -43,9 +51,11 @@ export async function searchMeme({ title, date, tags }) {
       title: title ?? "",
       date: date ?? null,
       tags: Array.isArray(tags) ? tags : [],
+      sortBy: sortBy ?? "date",
     }),
   });
 }
+
 
 export async function deleteMeme(memeId) {
   return await apiFetch(`/meme/${memeId}`, {

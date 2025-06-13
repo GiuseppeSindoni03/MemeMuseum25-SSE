@@ -1,0 +1,32 @@
+import React from "react";
+import "./Pagination.css"; // importa il CSS appena creato
+
+export default function Pagination({
+  totalItems,
+  itemsPerPage,
+  currentPage,
+  onPageChange,
+}) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="pagination-container">
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i}
+          className={`pagination-button ${
+            currentPage === i + 1 ? "active" : ""
+          }`}
+          onClick={() => {
+            onPageChange(i + 1);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
+  );
+}
