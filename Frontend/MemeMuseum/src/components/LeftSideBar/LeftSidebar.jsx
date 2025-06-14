@@ -20,6 +20,10 @@ export default function LeftSidebar({ setSidebarOpen }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Ignora il click se avviene sull'hamburger button (id="hamburger-toggle")
+      const isClickOnHamburger = event.target.closest("#hamburger-toggle");
+      if (isClickOnHamburger) return;
+
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
         closeSidebar();
       }

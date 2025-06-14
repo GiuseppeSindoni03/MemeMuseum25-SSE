@@ -149,6 +149,31 @@ function AppWrapper() {
       <Container fluid className="homepage-container">
         <Auth showModal={showModal} onClickClose={() => setShowModal(false)} />
 
+        {sidebarOpen && (
+          <div
+            className="mobile-sidebar-overlay d-md-none"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "180px",
+              height: "100vh",
+              backgroundColor: "#191a1e",
+              zIndex: 1050,
+              padding: "0px",
+              overflowY: "auto",
+            }}
+          >
+            <button
+              className="btn btn-sm btn-danger mb-3"
+              onClick={() => setSidebarOpen(false)}
+            >
+              ✕ Chiudi
+            </button>
+            <LeftSidebar setSidebarOpen={setSidebarOpen} />
+          </div>
+        )}
+
         <Row>
           <Col md={3} className="d-none d-md-flex justify-content-center">
             <LeftSidebar setSidebarOpen={setSidebarOpen} />

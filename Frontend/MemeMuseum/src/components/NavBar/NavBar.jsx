@@ -21,6 +21,7 @@ export default function AppNavbar({
       >
         <div className="d-flex align-items-center">
           <button
+            id="hamburger-toggle"
             className="btn btn-outline-light d-md-none me-2"
             onClick={onToggleSidebar}
             style={{ marginLeft: "-20px" }}
