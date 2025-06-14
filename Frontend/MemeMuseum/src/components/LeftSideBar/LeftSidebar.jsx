@@ -18,23 +18,6 @@ export default function LeftSidebar({ setSidebarOpen }) {
 
   const closeSidebar = () => setSidebarOpen(false);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Ignora il click se avviene sull'hamburger button (id="hamburger-toggle")
-      const isClickOnHamburger = event.target.closest("#hamburger-toggle");
-      if (isClickOnHamburger) return;
-
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        closeSidebar();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const goTo = (path) => {
     navigate(path);
     closeSidebar();

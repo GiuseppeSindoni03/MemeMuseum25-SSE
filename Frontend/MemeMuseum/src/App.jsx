@@ -164,12 +164,6 @@ function AppWrapper() {
               overflowY: "auto",
             }}
           >
-            <button
-              className="btn btn-sm btn-danger mb-3"
-              onClick={() => setSidebarOpen(false)}
-            >
-              ✕ Chiudi
-            </button>
             <LeftSidebar setSidebarOpen={setSidebarOpen} />
           </div>
         )}
