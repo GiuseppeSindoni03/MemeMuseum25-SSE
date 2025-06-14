@@ -28,6 +28,7 @@ import CreateMemeModal from "./components/NavBar/CreateModal/CreateMemeModal";
 import { Container, Row, Col } from "react-bootstrap";
 import { handleApiError } from "./utility/handleApiError";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "./services/AuthContext";
 
 function AppWrapper() {
   const [showModal, setShowModal] = useState(false);
@@ -44,6 +45,7 @@ function AppWrapper() {
 
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const pageParam = parseInt(searchParams.get("page")) || 1;
@@ -108,7 +110,7 @@ function AppWrapper() {
       }
       setMemes(data);
     } catch (err) {
-      handleApiError(err);
+      handleApiError(err,() => navigate("/"));
       setError(err.message);
     } finally {
       setLoading(false);
@@ -222,16 +224,20 @@ function AppWrapper() {
                   <Route
                     path="/profile"
                     element={
-                      <div style={{ maxWidth: "800px", padding: "0px 30px" }}>
-                        <Profile />
-                        <hr className="my-4" style={{ borderColor: "#444" }} />
-                        <h5 className="text-light mb-3">I miei Meme</h5>
-                        <HomePage
-                          memes={memes}
-                          setMemes={setMemes}
-                          onClickNotLogged={() => setShowModal(true)}
-                        />
-                      </div>
+                        <div style={{ maxWidth: "800px", padding: "0px 30px" }}>
+                          <Profile />
+                          <hr
+                            className="my-4"
+                            style={{ borderColor: "#444" }}
+                          />
+                          <h5 className="text-light mb-3">I miei Meme</h5>
+                          <HomePage
+                            memes={memes}
+                            setMemes={setMemes}
+                            onClickNotLogged={() => setShowModal(true)}
+                          />
+                        </div>
+
                     }
                   />
                   <Route path="*" element={<Navigate to="/" />} />

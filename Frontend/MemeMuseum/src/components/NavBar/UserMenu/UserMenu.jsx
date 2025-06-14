@@ -38,7 +38,12 @@ export default function UserMenu() {
           <button onClick={() => goTo("/profile")}>
             <IoPersonOutline /> Profilo
           </button>
-          <button onClick={logout}>
+          <button
+            onClick={() => {
+              logout();
+              navigate("/");
+            }}
+          >
             <IoLogOutOutline /> Logout
           </button>
         </div>
