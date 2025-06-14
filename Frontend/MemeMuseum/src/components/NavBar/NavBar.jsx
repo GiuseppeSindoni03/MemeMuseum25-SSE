@@ -9,11 +9,7 @@ import { useAuth } from "../../services/AuthContext";
 export default function AppNavbar({
   onClick,
   onOpenCreateModal,
-  onToggleSidebar,
-  onSearch,
-  filters,
-  setFilters,
-  onClickProfile
+  onToggleSidebar
 }) {
   const { isLoggedIn } = useAuth();
 
@@ -39,11 +35,7 @@ export default function AppNavbar({
         </div>
 
         <div className="navbar-search-container mx-auto flex-grow-1 mx-3">
-          <SearchBar
-            onSearch={onSearch}
-            filters={filters}
-            setFilters={setFilters}
-          />
+          <SearchBar/>
         </div>
 
         <div className="d-flex align-items-center">
@@ -59,7 +51,7 @@ export default function AppNavbar({
               </button>
 
               <div className="d-none d-md-block">
-                <UserMenu onClickProfile={onClickProfile}/>
+                <UserMenu/>
               </div>
             </>
           ) : (

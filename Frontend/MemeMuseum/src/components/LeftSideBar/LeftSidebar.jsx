@@ -7,19 +7,15 @@ import {
   IoLogOutOutline,
 } from "react-icons/io5";
 import { useAuth } from "../../services/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./LeftSidebar.css";
 
-export default function LeftSidebar({
-  currentPage,
-  clickOnTodayMeme,
-  navigateToHome,
-  navigateToProfile,
-  clickOnMyUpVotedMeme,
-  setSidebarOpen,
-}) {
+export default function LeftSidebar({ setSidebarOpen }) {
   const { isLoggedIn, logout } = useAuth();
-  
+  const navigate = useNavigate();
+  const location = useLocation();
   const sidebarRef = useRef(null);
+
   const closeSidebar = () => setSidebarOpen(false);
 
   useEffect(() => {
@@ -30,78 +26,44 @@ export default function LeftSidebar({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  const goTo = (path) => {
+    navigate(path);
+    closeSidebar();
+  };
+
+  const isActive = (path) => location.pathname === path;
+
   return (
     <div ref={sidebarRef} className="left-sidebar sidebar-sticky">
       <ul className="menu">
-        <li
-          className={`menu-item ${currentPage === "home" ? "selected" : ""}`}
-          onClick={() => {
-            navigateToHome();
-            closeSidebar();
-          }}
-        >
-          <i className="icon">
-            <IoHomeOutline />
-          </i>
+        <li className={`menu-item ${isActive("/") ? "selected" : ""}`} onClick={() => goTo("/")}> 
+          <i className="icon"><IoHomeOutline /></i>
           <span>Home</span>
         </li>
-        <li
-          className={`menu-item ${
-            currentPage === "todayMemes" ? "selected" : ""
-          }`}
-          onClick={() => {
-            clickOnTodayMeme();
-            closeSidebar();
-          }}
-        >
-          <i className="icon">
-            <IoTodayOutline />
-          </i>
+        <li className={`menu-item ${isActive("/today") ? "selected" : ""}`} onClick={() => goTo("/today")}> 
+          <i className="icon"><IoTodayOutline /></i>
           <span>Meme del giorno</span>
         </li>
         {isLoggedIn && (
-          <li
-            className={`menu-item ${
-              currentPage === "myUpvotes" ? "selected" : ""
-            }`}
-            onClick={() => {
-              clickOnMyUpVotedMeme();
-              closeSidebar();
-            }}
-          >
-            <i className="icon">
-              <IoThumbsUpOutline />
-            </i>
+          <li className={`menu-item ${isActive("/my-upvotes") ? "selected" : ""}`} onClick={() => goTo("/my-upvotes")}> 
+            <i className="icon"><IoThumbsUpOutline /></i>
             <span>Mi Piace</span>
           </li>
         )}
         {isLoggedIn && (
-          <li
-            className={`menu-item ${
-              currentPage === "profile" ? "selected" : ""
-            }`}
-            onClick={() => {
-              navigateToProfile();
-              closeSidebar();
-            }}
-          >
-            <i className="icon">
-              <IoPersonOutline />
-            </i>
+          <li className={`menu-item ${isActive("/profile") ? "selected" : ""}`} onClick={() => goTo("/profile")}> 
+            <i className="icon"><IoPersonOutline /></i>
             <span>Profilo</span>
           </li>
         )}
         {isLoggedIn && (
-          <li className="menu-item d-md-none" onClick={() => logout()}>
-            <i className="icon">
-              <IoLogOutOutline />
-            </i>
+          <li className="menu-item d-md-none" onClick={logout}> 
+            <i className="icon"><IoLogOutOutline /></i>
             <span>Logout</span>
           </li>
         )}

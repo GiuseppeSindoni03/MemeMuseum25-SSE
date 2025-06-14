@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../../services/AuthContext";
 import { FiUser } from "react-icons/fi";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./UserMenu.css";
 import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 
-export default function UserMenu({onClickProfile}) {
+export default function UserMenu() {
   const { logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const menuRef = useRef();
 
   const handleClickOutside = (e) => {
@@ -20,6 +22,11 @@ export default function UserMenu({onClickProfile}) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const goTo = (path) => {
+    navigate(path);
+    setOpen(false);
+  };
+
   return (
     <div className="user-menu" ref={menuRef}>
       <button className="icon-button" onClick={() => setOpen(!open)}>
@@ -28,8 +35,12 @@ export default function UserMenu({onClickProfile}) {
 
       {open && (
         <div className="dropdown">
-          <button onClick={onClickProfile}> <IoPersonOutline /> Profilo</button>
-          <button onClick={logout}><IoLogOutOutline /> Logout</button>
+          <button onClick={() => goTo("/profile")}>
+            <IoPersonOutline /> Profilo
+          </button>
+          <button onClick={logout}>
+            <IoLogOutOutline /> Logout
+          </button>
         </div>
       )}
     </div>

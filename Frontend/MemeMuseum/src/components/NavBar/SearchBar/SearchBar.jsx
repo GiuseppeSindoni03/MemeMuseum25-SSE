@@ -1,12 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Form, Collapse, Row } from "react-bootstrap";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./SearchBar.css";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
 
-export default function SearchBar({ onSearch, filters, setFilters }) {
+export default function SearchBar() {
   const [expanded, setExpanded] = useState(false);
   const wrapperRef = useRef(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const [filters, setFilters] = useState({
+    title: searchParams.get("title") || "",
+    tags: searchParams.get("tags")?.split(",") || [],
+    date: searchParams.get("date") || "",
+    sortBy: searchParams.get("sortBy") || "date",
+  });
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -24,6 +34,21 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSearchClick = () => {
+    const params = new URLSearchParams();
+    if (filters.title) params.set("title", filters.title);
+    if (filters.tags.length > 0) params.set("tags", filters.tags.join(","));
+    if (filters.date) params.set("date", filters.date);
+    if (filters.sortBy) params.set("sortBy", filters.sortBy);
+    params.set("page", "1");
+    navigate({ pathname: "/search", search: params.toString() });
+  };
+
+  const handleResetClick = () => {
+    setFilters({ title: "", tags: [], date: "", sortBy: "date" });
+    navigate("/");
   };
 
   return (
@@ -64,6 +89,7 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
               placeholder="Aggiungi un tag e premi invio"
             />
           </Form.Group>
+
           <Row className="sort-row align-items-center">
             <p className="sort-label">Ordina per</p>
             <select
@@ -78,15 +104,14 @@ export default function SearchBar({ onSearch, filters, setFilters }) {
               <option value="downvote">Più downvotati</option>
             </select>
           </Row>
+
           <div className="d-flex justify-content-end">
-            <button className="btn btn-outline-light me-2" onClick={onSearch}>
+            <button className="btn btn-outline-light me-2" onClick={handleSearchClick}>
               Cerca
             </button>
             <button
               className="btn btn-secondary"
-              onClick={() => {
-                setFilters({ title: "", tags: [], date: "" });
-              }}
+              onClick={handleResetClick}
             >
               Reset
             </button>
