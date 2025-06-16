@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateMemeDto } from './dto/create-meme.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Meme } from './meme.entity';
 import { User } from 'src/user/user.entity';
 import * as path from 'path';
@@ -68,11 +68,11 @@ export class MemeService {
     const formatted = await this.formatMemes(memes, userId);
     return formatted;
   }
-  
+
   async getAllPaginated(
     userId?: string,
     limit = 10,
-    offset = 0
+    offset = 0,
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
     const [memes, total] = await this.memeRepository.findAndCount({
       relations: ['author', 'tags', 'comments', 'votes'],
@@ -80,12 +80,11 @@ export class MemeService {
       take: limit,
       skip: offset,
     });
-  
+
     const formatted = await this.formatMemes(memes, userId);
     return { memes: formatted, total };
   }
 
-  
   async getById(memeId: string, userId?: string): Promise<MemeResponseDto> {
     const meme = await this.memeRepository.findOne({
       where: { id: memeId },
@@ -105,11 +104,13 @@ export class MemeService {
     return formatted;
   }
 
-    async getMyMemes( userId: string): Promise<MemeResponseDto[]> {
-    const memes = await this.memeRepository.find({
-      where: {
-        author: { id: userId },
-      },
+  async getMyMemes(
+    userId: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const [memes, total] = await this.memeRepository.findAndCount({
+      where: { author: { id: userId } },
       relations: [
         'author',
         'tags',
@@ -118,10 +119,13 @@ export class MemeService {
         'votes',
         'votes.user',
       ],
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
     });
 
     const formatted = await this.formatMemes(memes, userId);
-    return formatted;
+    return { memes: formatted, total };
   }
 
   async search(
@@ -131,37 +135,37 @@ export class MemeService {
     offset = 0,
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
     const { title, date, tags, sortBy } = searchDto;
-  
+
     const query = this.memeRepository
       .createQueryBuilder('meme')
       .leftJoinAndSelect('meme.author', 'author')
       .leftJoinAndSelect('meme.tags', 'tags')
       .leftJoinAndSelect('meme.comments', 'comments')
       .leftJoinAndSelect('meme.votes', 'votes');
-  
+
     // Filtri
     if (title) {
       query.andWhere('LOWER(meme.title) LIKE LOWER(:title)', {
         title: `%${title}%`,
       });
     }
-  
+
     if (date) {
       const start = new Date(date);
       start.setHours(0, 0, 0, 0);
       const end = new Date(date);
       end.setHours(23, 59, 59, 999);
-  
+
       query.andWhere('meme.createdAt BETWEEN :start AND :end', {
         start,
         end,
       });
     }
-  
+
     if (tags && tags.length > 0) {
       query.andWhere('tags.name IN (:...tags)', { tags });
     }
-  
+
     if (sortBy === 'upvote') {
       query.orderBy('meme.upvoteCount', 'DESC');
     } else if (sortBy === 'downvote') {
@@ -169,36 +173,47 @@ export class MemeService {
     } else {
       query.orderBy('meme.createdAt', 'DESC');
     }
-  
+
     const [memes, total] = await query
       .skip(offset)
       .take(limit)
       .getManyAndCount();
-  
+
     const formatted = await this.formatMemes(memes, userId);
     return { memes: formatted, total };
   }
-  
-  
 
-  async getMyUpvotedMemes(userId: string): Promise<MemeResponseDto[]> {
-    const votes: Vote[] = await this.voteRepository.find({
+  async getMyUpvotedMemesPaginated(
+    userId: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    // Step 1: trova tutti i memeId upvotati
+    const votes = await this.voteRepository.find({
       where: {
         user: { id: userId },
         type: VoteType.UP,
       },
-      relations: [
-        'meme',
-        'meme.author',
-        'meme.tags',
-        'meme.votes',
-        'meme.comments',
-      ],
+      relations: ['meme'],
     });
 
-    const upvotedMemes = votes.map((vote) => vote.meme);
+    const memeIds = votes.map((v) => v.meme.id);
 
-    return await this.formatMemes(upvotedMemes, userId);
+    if (memeIds.length === 0) {
+      return { memes: [], total: 0 };
+    }
+
+    // Step 2: paginazione solo su quelli
+    const [memes, total] = await this.memeRepository.findAndCount({
+      where: { id: In(memeIds) },
+      relations: ['author', 'tags', 'comments', 'votes'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    const formatted = await this.formatMemes(memes, userId);
+    return { memes: formatted, total };
   }
 
   async getTodayMeme(): Promise<MemeResponseDto[]> {
@@ -209,7 +224,7 @@ export class MemeService {
         (1000 * 60 * 60 * 24),
     );
 
-    const memesPerDay = 10;
+    const memesPerDay = 5;
     const startIndex = dayOfYear % allValidMemes.length;
 
     const dailyMemes: MemeResponseDto[] = [];

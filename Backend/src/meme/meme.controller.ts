@@ -43,14 +43,17 @@ export class MemeController {
   getAllMemes(
     @GetUser() user: User,
     @Query('limit') limit?: number,
-    @Query('offset') offset?: number
+    @Query('offset') offset?: number,
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
     const parsedLimit = Number(limit) || 10;
     const parsedOffset = Number(offset) || 0;
-  
-    return this.memeService.getAllPaginated(user?.id, parsedLimit, parsedOffset);
+
+    return this.memeService.getAllPaginated(
+      user?.id,
+      parsedLimit,
+      parsedOffset,
+    );
   }
-  
 
   @Post('/search')
   search(
@@ -61,23 +64,39 @@ export class MemeController {
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
     return this.memeService.search(searchDto, user?.id, +limit, +offset);
   }
-  
+
+  @Get('/mine')
+  @UseGuards(AuthGuard('jwt'))
+  getMyMemes(
+    @GetUser() user: User,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const parsedLimit = Number(limit) || 10;
+    const parsedOffset = Number(offset) || 0;
+
+    return this.memeService.getMyMemes(user.id, parsedLimit, parsedOffset);
+  }
+  @Get('/my-upvoted-memes')
+  @UseGuards(AuthGuard('jwt'))
+  getMyUpvotedMemes(
+    @GetUser() user: User,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+  ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const parsedLimit = Number(limit) || 10;
+    const parsedOffset = Number(offset) || 0;
+
+    return this.memeService.getMyUpvotedMemesPaginated(
+      user.id,
+      parsedLimit,
+      parsedOffset,
+    );
+  }
 
   @Get('/today')
   getTodayMemes(): Promise<MemeResponseDto[]> {
     return this.memeService.getTodayMeme();
-  }
-
-  @Get('/mine')
-  @UseGuards(AuthGuard('jwt'))
-  getMyMemes(@GetUser() user: User,): Promise<MemeResponseDto[]> {
-    return this.memeService.getMyMemes(user.id);
-  }
-
-  @Get('/my-upvoted-memes')
-  @UseGuards(AuthGuard('jwt'))
-  async getMyUpvotedMemes(@GetUser() user: User) {
-    return this.memeService.getMyUpvotedMemes(user.id);
   }
 
   @UseGuards(JwtOptionalAuthGuard)
