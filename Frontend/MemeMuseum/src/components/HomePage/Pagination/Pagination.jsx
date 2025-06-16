@@ -21,7 +21,6 @@ export default function Pagination({
           }`}
           onClick={() => {
             onPageChange(i + 1);
-            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
         >
           {i + 1}

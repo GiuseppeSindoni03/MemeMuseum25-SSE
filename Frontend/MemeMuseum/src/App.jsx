@@ -52,6 +52,7 @@ function AppWrapper() {
     setCurrentMemePage(pageParam);
 
     const path = location.pathname;
+    window.scrollTo({ top: 0, behavior: "smooth" });
     if (path === "/") loadMemes("home");
     else if (path === "/search") loadMemes("search");
     else if (path === "/profile") loadMemes("profile");
@@ -99,10 +100,15 @@ function AppWrapper() {
         }
       } else if (mode === "todayMemes") {
         data = await getTodayMemes();
+        setTotalMemes(5);
       } else if (mode === "myUpvotes") {
-        data = await getMyUpvotedMemes();
+        const { memes, total } = await getMyUpvotedMemes(memesPerPage, offset);
+        data = memes;
+        setTotalMemes(total);
       } else if (mode === "profile") {
-        data = await getMyMemes();
+        const { memes, total } = await getMyMemes(memesPerPage, offset);
+        data = memes;
+        setTotalMemes(total);
       } else {
         const { memes, total } = await fetchMemes(memesPerPage, offset);
         data = memes;

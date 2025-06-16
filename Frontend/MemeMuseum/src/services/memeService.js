@@ -7,12 +7,15 @@ export async function fetchMemes(limit = 10, offset = 0) {
 }
 
 
-export async function getTodayMemes() {
-  return await apiFetch(`/meme/today`);
+export async function getTodayMemes(limit = 10, offset = 0) {
+  const query = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
+  return await apiFetch(`/meme/today?${query.toString()}`);
 }
 
-export async function getMyUpvotedMemes() {
-  return await apiFetch(`/meme/my-upvoted-memes`);
+export async function getMyUpvotedMemes(limit = 10, offset = 0) {
+  const query = new URLSearchParams({ limit: limit.toString(), offset: offset.toString() });
+  console.log("Ris: ",await apiFetch(`/meme/my-upvoted-memes?${query.toString()}`));
+  return await apiFetch(`/meme/my-upvoted-memes?${query.toString()}`);
 }
 
 export async function getMyMemes() {
