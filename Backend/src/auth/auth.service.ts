@@ -50,7 +50,7 @@ export class AuthService {
       userId: user.id,
     };
 
-    const accessToken = await this.createToken(payload, '1h');
+    const accessToken = await this.createToken(payload, '5h');
 
     return { accessToken: accessToken };
   }
@@ -68,7 +68,7 @@ export class AuthService {
 
     const payload: JwtPayload = { userId: user.id };
 
-    const accessToken = await this.createToken(payload, '45m');
+    const accessToken = await this.createToken(payload, '5h');
 
     return { accessToken: accessToken };
   }

@@ -10,9 +10,9 @@ Progetto completo con backend in **NestJS** e frontend in **React** (Vite).
 
 ---
 
-## 🚀 Avvio del progetto
+## Avvio del progetto
 
-### 🖥️ Backend
+### Backend
 
 1. Spostati nella cartella `Backend` (nota la **B maiuscola**):
    cd Backend
@@ -23,7 +23,7 @@ Progetto completo con backend in **NestJS** e frontend in **React** (Vite).
 3. Avvia il server NestJS:
    npm run start:dev
 
-### 🌐 Frontend
+### Frontend
 
 1. Spostati nella cartella `frontend/mmuseum`:
    cd frontend/mmuseum
@@ -35,7 +35,7 @@ Progetto completo con backend in **NestJS** e frontend in **React** (Vite).
    npm run dev
 
 
-## ⚠️ Problema con `@pathofdev/react-tag-input`
+## Problema con `@pathofdev/react-tag-input`
 
 Per evitare un warning durante l'avvio del frontend, aprire il file: 
 node_modules/@pathofdev/react-tag-input/build/index.css
