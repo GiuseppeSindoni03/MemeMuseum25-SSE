@@ -9,7 +9,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger();
 
-  app.useStaticAssets(join('/home/dietideals/Scrivania/UploadsMemeMuseum'), {
+  app.useStaticAssets(join('/home/dietideals/Scrivania/UploadsMemeMuseum'), { //quando ho settato la macchina linux la 
+                                                          //prima volta per il progetto di ingegneria ero convinto che il progetto fosse dieti deals e non dieti estates...
     prefix: '/uploads',
   });
   

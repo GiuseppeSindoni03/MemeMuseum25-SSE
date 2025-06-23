@@ -1,5 +1,5 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: '.', // oppure './'
+  testDir: '.',
 });

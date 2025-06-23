@@ -1,5 +1,4 @@
-import React from "react";
-import "./Pagination.css"; // importa il CSS appena creato
+import "./Pagination.css";
 
 export default function Pagination({
   totalItems,

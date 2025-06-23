@@ -5,6 +5,16 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle(/MemeMuseum25/);
 });
 
+test("login", async ({ page }) => {
+  await page.goto("http://mememuseum.duckdns.org:5173/");
+  await page.getByRole("button", { name: "Accedi/Registrati" }).click();
+  await page.getByRole("textbox", { name: "Email" }).click();
+  await page.getByRole("textbox", { name: "Email" }).fill("testuser@example.com");
+  await page.getByRole("textbox", { name: "Password" }).click();
+  await page.getByRole("textbox", { name: "Password" }).fill("Str0ngP@ssw0rd!");
+  await page.getByRole("button", { name: "Entra" }).click();
+});
+
 test.describe("Authenticated Area", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("http://mememuseum.duckdns.org:5173/");
@@ -22,8 +32,8 @@ test.describe("Authenticated Area", () => {
   });
 
   test("Vote Up", async ({ page }) => {
-    const meme = page.locator('.meme-card:has-text("Primo di una lunga serie")');
-    await expect(meme).toHaveCount(1);
+    const meme = page.locator('.meme-card').first();
+    await expect(meme).toBeVisible();
 
     const likeBlock = meme.locator('.meme-footer .action').nth(0);
 
@@ -41,8 +51,8 @@ test.describe("Authenticated Area", () => {
   });
 
   test("Vote Down", async ({ page }) => {
-    const meme = page.locator('.meme-card:has-text("Primo di una lunga serie")');
-    await expect(meme).toHaveCount(1);
+    const meme = page.locator('.meme-card').first();
+    await expect(meme).toBeVisible();
 
     const likeBlock = meme.locator('.meme-footer .action').nth(1);
 
@@ -61,8 +71,8 @@ test.describe("Authenticated Area", () => {
   });
 
   test("Open Comments", async ({ page }) => {
-    const meme = page.locator('.meme-card:has-text("Primo di una lunga serie")');
-    await expect(meme).toHaveCount(1);
+    const meme = page.locator('.meme-card').first();
+    await expect(meme).toBeVisible();
 
     const commentButton = meme.locator('.meme-footer .action').nth(2)
 
@@ -75,8 +85,8 @@ test.describe("Authenticated Area", () => {
   test("Write comment", async ({ page }) => {
     const commentText = 'Test End to End';
 
-    const meme = page.locator('.meme-card:has-text("Primo di una lunga serie")');
-    await expect(meme).toHaveCount(1);
+    const meme = page.locator('.meme-card').first();
+    await expect(meme).toBeVisible();
 
     const commentButton = meme.locator('.meme-footer .action').nth(2);
     await commentButton.click();

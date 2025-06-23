@@ -28,7 +28,6 @@ import CreateMemeModal from "./components/NavBar/CreateModal/CreateMemeModal";
 import { Container, Row, Col } from "react-bootstrap";
 import { handleApiError } from "./utility/handleApiError";
 import "react-toastify/dist/ReactToastify.css";
-import { useAuth } from "./services/AuthContext";
 
 function AppWrapper() {
   const [showModal, setShowModal] = useState(false);

@@ -29,9 +29,9 @@ export async function getMemeById(memeId) {
 export async function createMeme({ title, tags, imageFile }) {
   const formData = new FormData();
 
-  formData.append("title", title); // campo "text" come richiesto dal DTO
+  formData.append("title", title);
   tags.forEach((tag) => formData.append("tags", tag));
-  formData.append("file", imageFile); // campo immagine (Multer)
+  formData.append("file", imageFile);
 
   return await apiFetch(`/meme`, {
     method: "POST",

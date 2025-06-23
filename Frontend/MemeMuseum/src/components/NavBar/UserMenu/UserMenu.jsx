@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../../services/AuthContext";
 import { FiUser } from "react-icons/fi";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./UserMenu.css";
 import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 
