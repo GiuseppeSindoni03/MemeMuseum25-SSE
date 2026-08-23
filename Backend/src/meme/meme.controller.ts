@@ -11,6 +11,7 @@ import {
   ClassSerializerInterceptor,
   UseInterceptors,
   Query,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { MemeService } from './meme.service';
 import { CreateMemeDto } from './dto/create-meme.dto';
@@ -21,6 +22,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { JwtOptionalAuthGuard } from 'src/common/jwt-optional-auth.guard';
 import { SearchDto } from './dto/search.dto';
 import { MemeResponseDto } from './dto/meme-response.dto';
+
+const sharp = require('sharp');
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Controller('meme')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -35,7 +40,24 @@ export class MemeController {
     @Body() dto: CreateMemeDto,
     @GetUser() user: User,
   ): Promise<any> {
-    return this.memeService.createMeme(user, dto, file.filename);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const filename = `meme-${uniqueSuffix}.webp`;
+    const outputPath = path.join(process.cwd(), 'uploads', filename);
+    
+    try {
+      if (!file || !file.buffer) {
+        throw new InternalServerErrorException('File o file.buffer mancante!');
+      }
+      await sharp(file.buffer)
+        .resize(650, 650, { fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(outputPath);
+    } catch (error: any) {
+      console.error('Errore sharp:', error);
+      throw new InternalServerErrorException(`Errore durante l'ottimizzazione dell'immagine: ${error.message}`);
+    }
+
+    return this.memeService.createMeme(user, dto, filename);
   }
 
   @UseGuards(JwtOptionalAuthGuard)

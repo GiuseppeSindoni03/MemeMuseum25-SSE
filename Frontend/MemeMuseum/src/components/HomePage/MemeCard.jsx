@@ -139,8 +139,8 @@ export default function MemeCard({
       </div>
 
       <div className="meme-image">
-        <img src={imageUrl} alt="blurred bg" className="meme-image-bg" />
-        <img src={imageUrl} alt={title} className="meme-image-foreground" />
+        <img src={imageUrl} alt="blurred bg" className="meme-image-bg" loading="lazy" />
+        <img src={imageUrl} alt={title} className="meme-image-foreground" loading="lazy" />
       </div>
 
       <div className="meme-footer">
