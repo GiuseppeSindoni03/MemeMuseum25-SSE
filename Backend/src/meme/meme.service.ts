@@ -14,6 +14,7 @@ import { TagService } from 'src/tag/tag.service';
 import { Vote, VoteType } from 'src/vote/vote.entity';
 import { SearchDto } from './dto/search.dto';
 import { MemeResponseDto } from './dto/meme-response.dto';
+import { memoryCache } from 'src/common/memory-cache';
 
 @Injectable()
 export class MemeService {
@@ -44,6 +45,7 @@ export class MemeService {
     });
 
     const newMeme = await this.memeRepository.save(meme);
+    memoryCache.clear();
 
     return {
       id: newMeme.id,
@@ -74,6 +76,12 @@ export class MemeService {
     limit = 10,
     offset = 0,
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const cacheKey = `feed_${userId || 'anon'}_${limit}_${offset}`;
+    const cached = memoryCache.get<{ memes: MemeResponseDto[]; total: number }>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const [memes, total] = await this.memeRepository.findAndCount({
       relations: ['author', 'tags', 'comments', 'votes'],
       order: { createdAt: 'DESC' },
@@ -82,10 +90,22 @@ export class MemeService {
     });
 
     const formatted = await this.formatMemes(memes, userId);
-    return { memes: formatted, total };
+    const result = { memes: formatted, total };
+
+    if (!userId) {
+      memoryCache.set(cacheKey, result, 30); // 30s cache for public feed
+    }
+
+    return result;
   }
 
   async getById(memeId: string, userId?: string): Promise<MemeResponseDto> {
+    const cacheKey = `meme_detail_${memeId}_${userId || 'anon'}`;
+    const cached = memoryCache.get<MemeResponseDto>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const meme = await this.memeRepository.findOne({
       where: { id: memeId },
       relations: [
@@ -101,6 +121,9 @@ export class MemeService {
     if (!meme) throw new NotFoundException();
 
     const formatted = await this.formatSingleMeme(meme, userId);
+    if (!userId) {
+      memoryCache.set(cacheKey, formatted, 60);
+    }
     return formatted;
   }
 
@@ -134,6 +157,12 @@ export class MemeService {
     limit = 10,
     offset = 0,
   ): Promise<{ memes: MemeResponseDto[]; total: number }> {
+    const cacheKey = `search_${JSON.stringify(searchDto)}_${userId || 'anon'}_${limit}_${offset}`;
+    const cached = memoryCache.get<{ memes: MemeResponseDto[]; total: number }>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const { title, date, tags, sortBy } = searchDto;
 
     const query = this.memeRepository
@@ -180,7 +209,12 @@ export class MemeService {
       .getManyAndCount();
 
     const formatted = await this.formatMemes(memes, userId);
-    return { memes: formatted, total };
+    const result = { memes: formatted, total };
+
+    if (!userId) {
+      memoryCache.set(cacheKey, result, 30);
+    }
+    return result;
   }
 
   async getMyUpvotedMemesPaginated(
@@ -217,13 +251,19 @@ export class MemeService {
   }
 
   async getTodayMeme(): Promise<MemeResponseDto[]> {
-    const totalMemes = await this.memeRepository.count();
-    if (totalMemes === 0) return [];
-
     const dayOfYear = Math.floor(
       (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
         (1000 * 60 * 60 * 24),
     );
+
+    const cacheKey = `today_meme_${dayOfYear}`;
+    const cached = memoryCache.get<MemeResponseDto[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const totalMemes = await this.memeRepository.count();
+    if (totalMemes === 0) return [];
 
     const memesPerDay = Math.min(5, totalMemes);
     const startIndex = dayOfYear % totalMemes;
@@ -248,7 +288,10 @@ export class MemeService {
       memes = [...memes, ...wrapAroundMemes];
     }
 
-    return this.formatMemes(memes);
+    const result = await this.formatMemes(memes);
+    // Cache for 24 hours (86400s)
+    memoryCache.set(cacheKey, result, 86400);
+    return result;
   }
 
   async delete(userId: string, id: string): Promise<void> {
@@ -282,6 +325,8 @@ export class MemeService {
       id: id,
       author: { id: userId } as User,
     });
+
+    memoryCache.clear();
   }
 
   async formatMemes(
