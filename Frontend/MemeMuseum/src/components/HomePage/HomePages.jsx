@@ -1,4 +1,5 @@
 import MemeCard from "./MemeCard";
+import { API_BASE_URL } from "../../utility/apiFetch";
 
 export default function HomePage({
   memes,
@@ -29,7 +30,7 @@ export default function HomePage({
           title={meme.title}
           author={meme.author}
           date={meme.createdAt}
-          imageUrl={"http://mememuseum.duckdns.org:3001" + meme.imageUrl}
+          imageUrl={API_BASE_URL + meme.imageUrl}
           tags={meme.tags}
           likes={meme.upvote}
           dislikes={meme.downvote}
