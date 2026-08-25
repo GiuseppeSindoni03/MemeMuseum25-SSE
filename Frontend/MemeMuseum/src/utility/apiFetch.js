@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://mememuseum.duckdns.org:3001";
-//const API_BASE_URL = "http://localhost:3000";
+// const API_BASE_URL = "http://mememuseum.duckdns.org:3001";
+export const API_BASE_URL = "http://localhost:3001";
 
 export async function apiFetch(url, options = {}) {
   const token = localStorage.getItem("accessToken");

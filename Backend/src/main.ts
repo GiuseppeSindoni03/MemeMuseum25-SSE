@@ -5,13 +5,19 @@ import { TransformInterceptor } from './common/transform.interceptor';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
+import * as compression from 'compression';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = new Logger();
 
-  app.useStaticAssets(join('/home/dietideals/Scrivania/UploadsMemeMuseum'), { //quando ho settato la macchina linux la 
-                                                          //prima volta per il progetto di ingegneria ero convinto che il progetto fosse dieti deals e non dieti estates...
+  app.use(compression());
+
+  app.useStaticAssets(join(process.cwd(), 'uploads'), { 
     prefix: '/uploads',
+    setHeaders: (res) => {
+      res.set('Cache-Control', 'public, max-age=31536000');
+    }
   });
   
   app.enableCors({

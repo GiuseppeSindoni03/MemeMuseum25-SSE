@@ -217,23 +217,38 @@ export class MemeService {
   }
 
   async getTodayMeme(): Promise<MemeResponseDto[]> {
-    const allValidMemes = await this.getAll();
+    const totalMemes = await this.memeRepository.count();
+    if (totalMemes === 0) return [];
 
     const dayOfYear = Math.floor(
       (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
         (1000 * 60 * 60 * 24),
     );
 
-    const memesPerDay = 5;
-    const startIndex = dayOfYear % allValidMemes.length;
+    const memesPerDay = Math.min(5, totalMemes);
+    const startIndex = dayOfYear % totalMemes;
 
-    const dailyMemes: MemeResponseDto[] = [];
-    for (let i = 0; i < memesPerDay && i < allValidMemes.length; i++) {
-      const index = (startIndex + i) % allValidMemes.length;
-      dailyMemes.push(allValidMemes[index]);
+    // Fetch exactly the required elements (avoids memory bloat)
+    let memes = await this.memeRepository.find({
+      relations: ['author', 'tags', 'comments', 'votes'],
+      order: { createdAt: 'DESC' },
+      skip: startIndex,
+      take: memesPerDay,
+    });
+
+    // Handle wrap-around if we reach the end of the records
+    if (memes.length < memesPerDay) {
+      const remaining = memesPerDay - memes.length;
+      const wrapAroundMemes = await this.memeRepository.find({
+        relations: ['author', 'tags', 'comments', 'votes'],
+        order: { createdAt: 'DESC' },
+        skip: 0,
+        take: remaining,
+      });
+      memes = [...memes, ...wrapAroundMemes];
     }
 
-    return dailyMemes;
+    return this.formatMemes(memes);
   }
 
   async delete(userId: string, id: string): Promise<void> {
@@ -251,7 +266,7 @@ export class MemeService {
     }
 
     const filePath = path.join(
-      '/home/dietideals/Scrivania/UploadsMemeMuseum',
+      process.cwd(), 'uploads',
       path.basename(meme.imageUrl),
     );
 
