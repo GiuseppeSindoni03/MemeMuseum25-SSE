@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Meme } from 'src/meme/meme.entity';
 import { User } from 'src/user/user.entity';
+import { memoryCache } from 'src/common/memory-cache';
 
 @Injectable()
 export class VoteService {
@@ -66,6 +67,7 @@ export class VoteService {
   
       await this.voteRepository.save(vote);
       await this.memeRepository.save(meme);
+      memoryCache.clear();
       return vote;
     }
   }
@@ -89,5 +91,6 @@ export class VoteService {
       id: voteId,
       user: { id: userId } as User,
     });
+    memoryCache.clear();
   }
 }
