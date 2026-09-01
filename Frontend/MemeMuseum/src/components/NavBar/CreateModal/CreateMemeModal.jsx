@@ -1,7 +1,7 @@
 import "./CreateMemeModal.css";
 import "@pathofdev/react-tag-input/build/index.css";
 import { useEffect, useState } from "react";
-import logo from "../../../assets/logo.png";
+import logo from "../../../assets/logo.webp";
 import { createMeme } from "../../../services/memeService";
 import ReactTagInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";

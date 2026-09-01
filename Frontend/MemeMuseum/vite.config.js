@@ -15,4 +15,9 @@ export default defineConfig({
     allowedHosts: ['mememuseum.duckdns.org', 'localhost'],
     historyApiFallback: true,
   },
+  preview: {
+    headers: {
+      'Cache-Control': 'public, max-age=31536000',
+    },
+  },
 });
