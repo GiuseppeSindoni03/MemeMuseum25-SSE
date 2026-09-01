@@ -1,6 +1,6 @@
 import "./Auth.css";
-import logo from "../assets/logo.png";
-import logoSad from "../assets/logoSad.png";
+import logo from "../assets/logo.webp";
+import logoSad from "../assets/logoSad.webp";
 import { useState, useEffect } from "react";
 import { useAuth } from "../services/AuthContext";
 import { loginApi, signUpApi } from "../services/authService";

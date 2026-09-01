@@ -1,7 +1,7 @@
 import { Navbar, Container } from "react-bootstrap";
 import "./NavBar.css";
 import { IoPersonAddOutline, IoAddOutline } from "react-icons/io5";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.webp";
 import UserMenu from "./UserMenu/UserMenu";
 import SearchBar from "./SearchBar/SearchBar";
 import { useAuth } from "../../services/AuthContext";
