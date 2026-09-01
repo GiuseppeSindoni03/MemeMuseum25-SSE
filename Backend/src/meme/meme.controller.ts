@@ -49,7 +49,7 @@ export class MemeController {
         throw new InternalServerErrorException('File o file.buffer mancante!');
       }
       await sharp(file.buffer)
-        .resize(650, 650, { fit: 'inside', withoutEnlargement: true })
+        .resize(412, 412, { fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 80 })
         .toFile(outputPath);
     } catch (error: any) {
