@@ -1,0 +1,3 @@
+Task Name,ops/sec,Average Time (ms),Samples,Margin
+"Senza Cache (Query DB simulata)",690931.42,0.001447,690932,0.00
+"Con In-Memory Cache (Risposta istantanea)",22451521.46,0.000045,22451522,0.00

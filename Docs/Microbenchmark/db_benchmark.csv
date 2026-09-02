@@ -1,0 +1,3 @@
+Task Name,ops/sec,Average Time (ms),Samples,Margin
+"Baseline (Senza skip/take) - Memory Bloat",169.46,5.901056,170,0.11
+"Eco-Design (Con skip/take) - Database Delegation",1581944.20,0.000632,1581945,0.00

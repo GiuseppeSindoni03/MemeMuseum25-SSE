@@ -1,0 +1,3 @@
+Task Name,ops/sec,Average Time (ms),Samples,Margin
+"Senza Compressione (Ritorna JSON grezzo)",441779.37,0.002264,441780,0.00
+"Con Compressione Gzip (Ottimizzazione Rete)",29989.57,0.033345,29990,0.00
