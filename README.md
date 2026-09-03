@@ -1,4 +1,6 @@
 # MemeMuseum25
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGiuseppeSindoni03%2FMemeMuseum25-SSE.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FGiuseppeSindoni03%2FMemeMuseum25-SSE?ref=badge_shield)
+
 
 Progetto completo con backend in **NestJS** e frontend in **React** (Vite).
 
@@ -46,3 +48,7 @@ e rimuovere l’ultima riga:
 
 Questo passaggio è necessario solo dopo la prima installazione dei pacchetti (npm install).
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FGiuseppeSindoni03%2FMemeMuseum25-SSE.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FGiuseppeSindoni03%2FMemeMuseum25-SSE?ref=badge_large)
